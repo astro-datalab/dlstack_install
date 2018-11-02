@@ -221,6 +221,8 @@ pip install vorbin
 pip install ppxf
 pip install pafit
 
+pip install mpdaf
+
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
     pip install -v --no-deps --upgrade git+https://github.com/dstndstn/tractor.git
