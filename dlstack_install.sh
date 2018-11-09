@@ -152,6 +152,7 @@ pip install --upgrade pip
 
 pip install astrocalc
 pip install astropy-helpers
+pip install astropy-healpix
 pip install docker-py
 pip install easyaccess
 pip install httplib2
@@ -208,6 +209,7 @@ pip install --upgrade pip
 
 pip install astrocalc
 pip install astropy-helpers
+pip install astropy-healpix
 #pip install easyaccess			# Not Py3 compatible
 pip install httplib2
 pip install jupyterhub
