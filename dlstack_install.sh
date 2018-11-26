@@ -145,6 +145,7 @@ conda install -y -c astropy photutils
 
 conda install -y pyfits			# not available Py3
 conda install -y uwsgi
+conda install -c glueviz glueviz=0.14
 
 
 # PIP Installs
@@ -203,6 +204,7 @@ conda install -y astropy astroml autopep8 docker-py numpy passlib psycopg2 passl
 
 #conda install -y pyfits
 conda install -y uwsgi
+conda install -c glueviz glueviz=0.14
 
 # PIP Installs
 pip install --upgrade pip
