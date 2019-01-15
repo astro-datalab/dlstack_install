@@ -141,6 +141,7 @@ conda install -y numpy future cx_oracle
 conda install -y astropy astroml autopep8 numpy passlib psycopg2 passlib future mpi4py nodejs openblas pyvo redis redis-py simplejson termcolor virtualenv healpy photutils tensorflow
 
 conda install -y mysql-python		# Py2 only
+conda install -y mysqlclient
 conda install -y -c astropy photutils
 
 conda install -y pyfits			# not available Py3
@@ -205,6 +206,7 @@ conda install -y astropy astroml autopep8 docker-py numpy passlib psycopg2 passl
 #conda install -y pyfits
 conda install -y uwsgi
 conda install -c glueviz glueviz=0.14
+conda install -y mysqlclient
 
 # PIP Installs
 pip install --upgrade pip
