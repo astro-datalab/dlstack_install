@@ -146,7 +146,7 @@ conda install -y -c astropy photutils
 
 conda install -y pyfits			# not available Py3
 conda install -y uwsgi
-conda install -c glueviz glueviz=0.14
+conda install -c glueviz -y glueviz=0.14
 
 
 # PIP Installs
@@ -162,6 +162,7 @@ pip install pysqlpool
 pip install uwsgi uwsgitop
 pip install xmltodict
 pip install fitsio
+pip install astrorapid
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
@@ -205,7 +206,7 @@ conda install -y astropy astroml autopep8 docker-py numpy passlib psycopg2 passl
 
 #conda install -y pyfits
 conda install -y uwsgi
-conda install -c glueviz glueviz=0.14
+conda install -c glueviz -y glueviz=0.14
 conda install -y mysqlclient
 
 # PIP Installs
@@ -228,6 +229,7 @@ pip install ppxf
 pip install pafit
 
 pip install mpdaf
+pip install astrorapid
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
