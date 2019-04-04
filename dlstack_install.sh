@@ -163,6 +163,7 @@ pip install uwsgi uwsgitop
 pip install xmltodict
 pip install fitsio
 pip install astrorapid
+pip install matplotlib
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
@@ -230,6 +231,8 @@ pip install pafit
 
 pip install mpdaf
 pip install astrorapid
+pip install PyQt5
+pip install matplotlib
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
