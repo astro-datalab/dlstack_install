@@ -138,7 +138,26 @@ conda config --add channels https://conda.anaconda.org/als832
 conda config --add channels https://conda.anaconda.org/pmuller
 
 conda install -y numpy future cx_oracle
-conda install -y astropy astroml autopep8 numpy passlib psycopg2 passlib future mpi4py nodejs openblas pyvo redis redis-py simplejson termcolor virtualenv healpy photutils tensorflow
+conda install -y astropy
+conda install -y astroml
+conda install -y autopep8
+conda install -y numpy
+conda install -y passlib
+conda install -y psycopg2
+conda install -y passlib
+conda install -y future
+conda install -y mpi4py
+conda install -y nodejs
+conda install -y openblas
+conda install -y pyvo
+conda install -y redis
+conda install -y redis-py
+conda install -y simplejson
+conda install -y termcolor
+conda install -y virtualenv
+conda install -y healpy
+conda install -y photutils
+conda install -y tensorflow
 
 conda install -y mysql-python		# Py2 only
 conda install -y mysqlclient
@@ -162,7 +181,7 @@ pip install pysqlpool
 pip install uwsgi uwsgitop
 pip install xmltodict
 pip install fitsio
-pip install astrorapid
+pip install astrorapid==0.1.21
 pip install matplotlib
 
 if [ do_astrometry_dot_net == 1 ]; then
@@ -203,7 +222,27 @@ conda config --add channels conda-forge
 conda config --add channels astropy
 
 conda install -y numpy cx_oracle
-conda install -y astropy astroml autopep8 docker-py numpy passlib psycopg2 passlib future mpi4py nodejs openblas pyvo redis redis-py simplejson termcolor virtualenv healpy photutils tensorflow
+conda install -y astropy
+conda install -y astroml
+conda install -y autopep8
+conda install -y docker-py
+conda install -y numpy
+conda install -y passlib
+conda install -y psycopg2
+conda install -y passlib
+conda install -y future
+conda install -y mpi4py
+conda install -y nodejs
+conda install -y openblas
+conda install -y pyvo
+conda install -y redis
+conda install -y redis-py
+conda install -y simplejson
+conda install -y termcolor
+conda install -y virtualenv
+conda install -y healpy
+conda install -y photutils
+conda install -y tensorflow
 
 #conda install -y pyfits
 conda install -y uwsgi
@@ -230,7 +269,7 @@ pip install ppxf
 pip install pafit
 
 pip install mpdaf
-pip install astrorapid
+pip install astrorapid==0.1.21
 pip install PyQt5
 pip install matplotlib
 
