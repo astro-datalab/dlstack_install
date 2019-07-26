@@ -3,8 +3,8 @@
 #  DLSTACK.SH -- Install the Data Lab software using Anaconda as a base
 #                system plus additional packages.
 
-ver="4.4.0"					# Anaconda version to install
-ver="5.2.0"					# Anaconda version to install
+ver="2019.03"					# Anaconda version to install
+ver="2019.03"					# Anaconda version to install
 base_url="https://repo.continuum.io/archive/"	# Anaconda download repo
 
 # ===========================================================================
@@ -12,6 +12,7 @@ base_url="https://repo.continuum.io/archive/"	# Anaconda download repo
 # be done manually if needed).
 
 do_astrometry_dot_net=0
+do_jupyerlab_extensions=0
 # ===========================================================================
 
 
@@ -80,10 +81,7 @@ curl -O -L http://soft.g-vo.org/dist/gavovot-latest.tar.gz
 curl -O -L http://soft.g-vo.org/dist/gavostc-latest.tar.gz
 
 # Clone the Data Lab client package
-#git clone http://github.com/noao-datalab/datalab-client.git && \
-#          mv datalab-client datalab
-git clone http://gitlab.noao.edu/datalab/datalab.git
-
+git clone http://github.com/noaodatalab/datalab.git
 
 # Unpack the GAVO packages
 gavo_ver=`tar tf gavovot-latest.tar.gz | head -1 | cut -c9-11`
@@ -98,6 +96,9 @@ cat gavoutils-${gavo_ver}/gavo/utils/ostricks.py | \
       sed -e "${s},${e}d" -e "97ifrom urllib2 import HTTPSHandler" > /tmp/os.$$
 mv /tmp/os.$$ gavoutils-${gavo_ver}/gavo/utils/ostricks.py
 
+
+# Pre-install the astroplan module to workaround old PyPi package
+git clone https://github.com/astropy/astroplan
 
 
 # Download and unpack the astrometry.net package
@@ -118,46 +119,31 @@ fi
 mv Anaconda*.sh *.gz downloads
 
 
+# Conda Install Configs
+conda config --add channels conda-forge
+conda config --add channels astropy
+conda config --add channels https://conda.anaconda.org/als832
+conda config --add channels https://conda.anaconda.org/pmuller
+
+
 
 # ------------------------------------------------------------------------
 # ===================
 # Anaconda Python 2.7
 # ===================
 
-export PATH=$cwd/anaconda2/bin:$path
+export PATH=$cwd/anaconda2/bin:$path:/usr/bin
 
 echo ""
 echo "----------------------------------------------"
 echo " Installing Python2 packages ...."
 echo "----------------------------------------------"
 
-# Conda Installs
-conda config --add channels conda-forge
-conda config --add channels astropy
-conda config --add channels https://conda.anaconda.org/als832
-conda config --add channels https://conda.anaconda.org/pmuller
 
 conda install -y numpy future cx_oracle
-conda install -y astropy
-conda install -y astroml
-conda install -y autopep8
-conda install -y numpy
-conda install -y passlib
-conda install -y psycopg2
-conda install -y passlib
-conda install -y future
-conda install -y mpi4py
-conda install -y nodejs
-conda install -y openblas
-conda install -y pyvo
-conda install -y redis
-conda install -y redis-py
-conda install -y simplejson
-conda install -y termcolor
-conda install -y virtualenv
-conda install -y healpy
-conda install -y photutils
-conda install -y tensorflow
+conda install -y -c conda-forge astor
+conda install -y -c conda-forge pyopengl
+conda install -y astropy astroml autopep8 numpy passlib psycopg2 passlib future mpi4py nodejs openblas pyvo redis redis-py simplejson termcolor virtualenv healpy photutils tensorflow
 
 conda install -y mysql-python		# Py2 only
 conda install -y mysqlclient
@@ -181,8 +167,10 @@ pip install pysqlpool
 pip install uwsgi uwsgitop
 pip install xmltodict
 pip install fitsio
-pip install astrorapid==0.1.21
+pip install astrorapid
 pip install matplotlib
+pip install batman
+pip install gatspy
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
@@ -190,59 +178,38 @@ if [ do_astrometry_dot_net == 1 ]; then
     cp -rp astrometry/libpython/astrometry anaconda3/lib/python*/site-packages/
 fi
 
-
-# Install the Data Lab client package
-#pip install datalab
-( cd datalab ; python setup.py install )
-
-
 # GAVO Package installation
 (cd gavoutils-$gavo_ver  ; python setup.py install)
 (cd gavovot-$gavo_ver    ; python setup.py install)
 (cd gavostc-$gavo_ver    ; python setup.py install)
 
+# Install the Data Lab client package
+( cd datalab ; python setup.py install )
+
+#( cd astroplan ; python setup.py install )
+#( cd antares ; python setup.py install )
+
 conda clean -y -a
+
 
 # ============================================================================
 
 # ===================
-# Anaconda Python 3.6
+# Anaconda Python 3.7
 # ===================
 
-export PATH=$cwd/anaconda3/bin:$path
-
+export PATH=$cwd/anaconda3/bin:$path:/usr/bin
 
 echo ""
 echo "----------------------------------------------"
 echo " Installing Python3 packages ...."
 echo "----------------------------------------------"
 
-# Conda Installs
-conda config --add channels conda-forge
-conda config --add channels astropy
 
 conda install -y numpy cx_oracle
-conda install -y astropy
-conda install -y astroml
-conda install -y autopep8
-conda install -y docker-py
-conda install -y numpy
-conda install -y passlib
-conda install -y psycopg2
-conda install -y passlib
-conda install -y future
-conda install -y mpi4py
-conda install -y nodejs
-conda install -y openblas
-conda install -y pyvo
-conda install -y redis
-conda install -y redis-py
-conda install -y simplejson
-conda install -y termcolor
-conda install -y virtualenv
-conda install -y healpy
-conda install -y photutils
-conda install -y tensorflow
+conda install -y -c conda-forge astor
+conda install -y -c conda-forge pyopengl
+conda install -y astropy astroml autopep8 docker-py numpy passlib psycopg2 passlib future mpi4py nodejs openblas pyvo redis redis-py simplejson termcolor virtualenv healpy photutils tensorflow
 
 #conda install -y pyfits
 conda install -y uwsgi
@@ -269,9 +236,11 @@ pip install ppxf
 pip install pafit
 
 pip install mpdaf
-pip install astrorapid==0.1.21
+pip install astrorapid
 pip install PyQt5
 pip install matplotlib
+pip install batman
+pip install gatspy
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
@@ -279,14 +248,81 @@ if [ do_astrometry_dot_net == 1 ]; then
     cp -rp astrometry/libpython/astrometry anaconda3/lib/python*/site-packages/
 fi
 
-# Install the Data Lab client package
-( cd datalab ; python setup.py install )
-
-
 # GAVO Package installation
 (cd gavoutils-$gavo_ver  ; python setup.py install)
 (cd gavovot-$gavo_ver    ; python setup.py install)
 (cd gavostc-$gavo_ver    ; python setup.py install)
+
+# Install the Data Lab client package
+( cd datalab ; python setup.py install )
+
+#( cd astroplan ; python setup.py install )
+#( cd antares ; python setup.py install )
+
+if [ do_jupyterlab_extensions == 1 ]; then
+
+    conda install -c conda-forge -y ipywidgets
+
+    jupyter labextension install jupyterlab_bokeh
+
+    conda install -c plotly -y jupyterlab-dash
+
+    conda install -c conda-forge -y ipysheet
+
+    jupyter labextension install @oriolmirosa/jupyterlab_materialdarker
+
+    jupyter labextension install @jupyterlab/theme-dark-extension
+
+    pip install jupyterlab-discovery
+
+    pip install pylantern
+    pip list | grep lantern
+    jupyter labextension install pylantern
+
+    pip install scriptedforms
+
+    jupyter labextension install @jupyterlab/hub-extension
+
+    jupyter labextension install @ryantam626/jupyterlab_code_formatter
+    pip install jupyterlab_code_formatter
+    jupyter serverextension enable --py jupyterlab_code_formatter
+    pip install autopep8 black YAPF lsort
+
+    jupyter labextension install @jupyterlab/toc
+    jupyter labextension install jupyterlab-drawio
+    jupyter labextension install @jupyterlab/celltags
+    jupyter labextension install @jupyterlab/statusbar
+    jupyter labextension install @lckr/jupyterlab_variableinspector
+
+    conda install -c conda-forge -y ipyleaflet
+
+    conda install -c conda-forge -y ipytree
+
+    conda install -c conda-forge -y ipyvolume
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager
+    jupyter labextension install ipyvolume
+    jupyter labextension install jupyter-threejs
+
+    conda install -c conda-forge -y qgrid
+    jupyter labextension install qgrid
+
+    jupyter labextension install @mflevine/jupyterlab_html
+
+    jupyter labextension install @jupyterlab/plotly-extension
+
+    pip install jupyterlab_sql
+    jupyter serverextension enable jupyterlab_sql --py --sys-prefix
+    jupyter lab build
+
+    pip install sidecar
+    jupyter labextension install @jupyter-widgets/jupyterlab-sidecar
+
+    jupyter labextension install jupyterlab-flake8
+
+    jupyter labextension install @jupyterlab/xkcd-extension
+
+    conda install -c wwt -y pywwt
+fi
 
 conda clean -y -a
 
