@@ -171,6 +171,7 @@ pip install astrorapid
 pip install matplotlib
 pip install batman
 pip install gatspy
+pip install emcee
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
@@ -243,6 +244,7 @@ pip install batman
 pip install gatspy
 pip install lmfit
 pip install h5py==2.9.0
+pip install emcee
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
