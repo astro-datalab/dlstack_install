@@ -245,6 +245,7 @@ pip install gatspy
 pip install lmfit
 pip install h5py==2.9.0
 pip install emcee
+pip install speclite
 
 if [ do_astrometry_dot_net == 1 ]; then
     ( cd astrometry.net-0.75 ; make pyinstall )
