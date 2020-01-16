@@ -107,6 +107,7 @@ conda install -y \
     astropy-healpix \
     astroquery \
     autopep8 \
+    cx_oracle \
     docker-py \
     emcee \
     future \
@@ -142,6 +143,7 @@ pip install --upgrade pip
 
 pip install astrocalc
 pip install batman-package
+pip install easyaccess
 pip install h5py==2.9.0
 pip install lmfit
 pip install jampy
