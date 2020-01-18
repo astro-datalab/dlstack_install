@@ -115,6 +115,7 @@ conda install -y \
     glueviz=0.14 \
     healpy \
     httplib2 \
+    ipympl \
     jupyterhub \
     matplotlib \
     mpi4py \
@@ -254,7 +255,16 @@ if [ $do_jupyterlab_extensions == 1 ]; then
 
     conda install -c wwt -y pywwt
 
-    jupyter lab build
+fi
+jupyter lab build
+
+
+# Install third-party kernel spec files
+if [ -d ./kernel-specs ]; then
+    echo "----------------------------------------------"
+    echo " Installing kernels ...."
+    echo "----------------------------------------------"
+    cp -rp ./kernel-specs/* ./anaconda3/share/jupyter/kernels
 fi
 
 
@@ -262,7 +272,7 @@ fi
 if [ ! -d ./downloads ]; then
     mkdir downloads
 fi
-mv Anaconda*.sh *.gz downloads
+mv Anaconda*.sh *.gz datalab dlauthenticator downloads
 conda clean -y -a
 
 # Create the local manifest file.
