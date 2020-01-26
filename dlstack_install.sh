@@ -135,7 +135,8 @@ conda install -y \
     tensorflow \
     termcolor \
     uwsgi \
-    virtualenv
+    virtualenv \
+    wget
 
 # ===============
 # PIP Installs
@@ -153,7 +154,6 @@ pip install mpdaf
 pip install pafit
 pip install ppxf
 pip install PyQt5
-pip install uwsgi uwsgitop
 pip install vorbin
 
 
