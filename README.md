@@ -2,7 +2,7 @@
 
 DLSTACK_INSTALL -- Install the Anaconda+Packages used in Data Lab
 
-
+```
 Usage:
 ------
       % ./dlstack_install.sh [options...]
@@ -15,7 +15,7 @@ Options:
     [-k|--kernels]      Install all kernel specs
     [-s|--stable]       Use the stable 'datalab' package release (def: Yes)
     [-K <directory>]    Set kernel-spec directory (def: /data0/kernel-specs)
-
+```
 
 Description:
 ------------
@@ -30,13 +30,9 @@ repository if the '--dev' flag is enable, otherwise the current PyPi
 version of the package is installed.
 
 
-=========================================================================
-Operational Notes:
 
-
-   ==================================================================
-   Building / Configuring the Data Lab Notebook Server Software Stack
-   ==================================================================
+Building / Configuring the Data Lab Notebook Server Software Stack
+------------------------------------------------------------------
 
 
     The Data Lab notebook software stack consists of one or more Jupyter
