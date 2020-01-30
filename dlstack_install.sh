@@ -15,13 +15,29 @@ base_url="https://repo.continuum.io/archive/"	# Anaconda download repo
 
 export do_gavo=0
 export do_astrometry_dot_net=0
-export do_jupyerlab_extensions=1
+export do_jupyterlab_extensions=0
 # ===========================================================================
 
 
+function usage {
+    echo "Usage:"
+    echo "      $(basename $0) [options...]"
+    echo ""
+    echo "Options:"
+    echo "    [-h|-?|--help]    Display a usage summary"
+    echo "    [-c|--clean]      Clean up existing version before install"
+    echo "    [-d|--dev]        Install the dev 'datalab' package release"
+    echo "    [-e|--extensions] Install JupyterLab extensions"
+    echo "    [-k|--kernels]    Install all kernel specs in kernel-spec dir"
+    echo "    [-s|--stable]     Use the stable 'datalab' release (def: True)"
+    echo "    [-K <directory>]  Set kernel-spec dir (def: /data0/kernel-specs)"
+    exit
+
+}
+
+prefix=`pwd -L`
 platform=`uname -m`
 os=`uname -s`
-cwd=`pwd`
 
 if [ "$os" == "Linux" ]; then
     arch="Linux"
@@ -31,11 +47,45 @@ else
     arch="none"
 fi
 
-echo ""
-echo -n "Start: "
+
+# --------------------
+# Process script args.
+# --------------------
+k_dir='/data0/kernel-specs'
+do_kernels=0
+do_clean=0
+do_dev=0
+do_stable=1
+declare -a userargs skiplist
+while [ "$#" -gt 0 ]; do
+    case $1 in
+        -h|-\?|--help) usage;;
+        -k|--kernels) export do_kernels=1;;
+        -c|--clean) export do_clean=1;;
+        -d|--dev) export do_dev=1;export do_stable=0;;
+        -e|--extensions) export do_jupyterlab_extensions=1;;
+        -s|--stable) export do_stable=1;export do_dev=0;;
+        -K|--kernel-dir) shift;k_dir=$1;;
+        *) userargs=("${userargs[@]}" "${1}");;
+    esac; shift
+done
+
+
+echo "" && echo -n "Start: "
 /bin/date
-echo ""
-echo ""
+echo "" && echo ""
+
+
+# ====================================
+# Clean up any existing installation.
+# ====================================
+if [ $do_clean == 1 ]; then
+    echo "# ------------------------------------"
+    echo -n "Cleaning old install ..... "
+    /bin/rm -rf ./anaconda3 ./downloads ./get-pip.py ./MANIFEST
+    echo "Done"
+    echo "# ------------------------------------"
+fi
 
 
 # ------------------------------------------------------------------------
@@ -49,28 +99,18 @@ url=${base_url}${fname}
 if [ ! -f ./$fname ]; then
     curl -o $fname $url
 fi
-if [ ! -d $cwd/anaconda3 ]; then
-    mkdir $cwd/anaconda3
+if [ ! -d $prefix/anaconda3 ]; then
+    mkdir $prefix/anaconda3
 fi
-sh $fname -b -u -p $cwd/anaconda3
+chmod 755 $fname
+export PWD=$prefix && sh $fname -b -u -p $prefix/anaconda3
 
+# Set the PATH to pick up the new conda install directory.
+export PATH=$prefix/anaconda3/bin:$path:/bin:/usr/bin
 
+# Download the PIP installer.
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 anaconda3/bin/python get-pip.py
-
-
-# ------------------------------------------------------------------------
-echo ""
-echo "----------------------------------------------"
-echo " Downloading external packages ...."
-echo "----------------------------------------------"
-
-# Clone the Data Lab client package
-git clone http://github.com/noaodatalab/datalab.git
-
-# Clone the Data Lab Authenticator
-git clone https://github.com/noaodatalab/dlauthenticator
-
 
 # Update conda and install configs
 conda update -n base -c defaults -y conda
@@ -82,14 +122,11 @@ conda config --add channels https://conda.anaconda.org/als832
 conda config --add channels https://conda.anaconda.org/pmuller
 
 
-
 # ============================================================================
 
 # ===================
 # Anaconda Python 3.7
 # ===================
-
-export PATH=$cwd/anaconda3/bin:$path:/bin:/usr/bin
 
 echo ""
 echo "----------------------------------------------"
@@ -123,6 +160,7 @@ conda install -y \
     nodejs \
     numpy \
     openblas \
+    pandas \
     passlib \
     psycopg2 \
     photutils \
@@ -143,6 +181,9 @@ conda install -y \
 # ===============
 pip install --upgrade pip
 
+if [ $do_stable == 1 ]; then
+    pip install noaodatalab
+fi
 pip install astrocalc
 pip install batman-package
 pip install easyaccess
@@ -201,12 +242,30 @@ if [ $do_gavo == 1 ]; then
     (cd gavostc-$gavo_ver    ; python setup.py install)
 fi
 
+
+# ------------------------------------------------------------------------
+echo ""
+echo "----------------------------------------------"
+echo " Downloading external packages ...."
+echo "----------------------------------------------"
+
 # Install the Data Lab client package and authenticator
-( cd datalab ; python setup.py install )
+if [ $do_dev == 1 ]; then
+    git clone http://github.com/noaodatalab/datalab.git
+    ( cd datalab ; python setup.py install )
+fi
+
+# Clone the Data Lab Authenticator
+git clone https://github.com/noaodatalab/dlauthenticator
 ( cd dlauthenticator ; python setup.py install )
 
 
+# ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
+    echo ""
+    echo "----------------------------------------------"
+    echo " Installing JupyterLab packages ...."
+    echo "----------------------------------------------"
 
     conda install -c conda-forge -y ipywidgets		# enabled automatically
 
@@ -214,18 +273,10 @@ if [ $do_jupyterlab_extensions == 1 ]; then
 
     conda install -c plotly -y jupyterlab-dash
 
-    #conda install -c conda-forge -y ipysheet
-
     jupyter labextension install @jupyterlab/hub-extension
-
-    jupyter labextension install @ryantam626/jupyterlab_code_formatter
-    #pip install jupyterlab_code_formatter
-    #jupyter serverextension enable --py jupyterlab_code_formatter
-    #pip install autopep8 black YAPF lsort
 
     jupyter labextension install @jupyterlab/toc
     jupyter labextension install jupyterlab-drawio
-    jupyter labextension install @jupyterlab/statusbar
     jupyter labextension install @lckr/jupyterlab_variableinspector
 
     conda install -c conda-forge -y ipyleaflet
@@ -240,12 +291,6 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     conda install -c conda-forge -y qgrid
     jupyter labextension install qgrid
 
-    #jupyter labextension install @mflevine/jupyterlab_html
-    #jupyter labextension install @jupyterlab/plotly-extension
-
-    #pip install jupyterlab_sql
-    #jupyter serverextension enable jupyterlab_sql --py --sys-prefix
-
     pip install sidecar
     jupyter labextension install @jupyter-widgets/jupyterlab-sidecar
 
@@ -254,21 +299,28 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     jupyter labextension install @jupyterlab/xkcd-extension
 
     conda install -c wwt -y pywwt
-
 fi
 jupyter lab build
 
 
+# ------------------------------------------------------------------------
 # Install third-party kernel spec files
-if [ -d ./kernel-specs ]; then
+if [ $do_kernels == 1 ]; then
     echo "----------------------------------------------"
     echo " Installing kernels ...."
     echo "----------------------------------------------"
-    cp -rp ./kernel-specs/* ./anaconda3/share/jupyter/kernels
+    if [ -e ${k_dir} ]; then
+        echo "Copying Kernel files .... "
+        cp -rp $k_dir/* $prefix/anaconda3/share/jupyter/kernels/
+    fi
 fi
 
 
+# ------------------------------------------------------------------------
 # Clean up and save the download files
+echo "----------------------------------------------"
+echo " Cleaning up ...."
+echo "----------------------------------------------"
 if [ ! -d ./downloads ]; then
     mkdir downloads
 fi
@@ -279,8 +331,7 @@ conda clean -y -a
 pip freeze >& MANIFEST
 
 
-echo ""
-echo ""
+echo "" && echo ""
 echo -n "End: "
 /bin/date
 echo ""
