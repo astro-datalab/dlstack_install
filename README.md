@@ -1,7 +1,7 @@
 
 
-DLSTACK_INSTALL -- Install the Anaconda+Packages used in Data Lab
-=================================================================
+DLSTACK_INSTALL -- Install the Notebook Software Used in Data Lab
+-----------------------------------------------------------------
 
 ```
 Usage:
