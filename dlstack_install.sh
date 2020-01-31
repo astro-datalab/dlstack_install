@@ -166,7 +166,6 @@ conda install -y \
     photutils \
     pyopengl \
     pyvo \
-    redis redis-py \
     simplejson \
     speclite \
     specutils \
@@ -175,6 +174,7 @@ conda install -y \
     uwsgi \
     virtualenv \
     wget
+
 
 # ===============
 # PIP Installs
@@ -196,6 +196,7 @@ pip install pafit
 pip install ppxf
 pip install PyQt5
 pip install vorbin
+pip install redis==2.10.6
 
 
 # Obsolete packages, included here for documentation only
