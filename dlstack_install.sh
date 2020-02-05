@@ -20,21 +20,86 @@ export do_jupyterlab_extensions=0
 
 
 function usage {
-    echo "Usage:"
-    echo "      $(basename $0) [options...]"
-    echo ""
-    echo "Options:"
-    echo "    [-h|-?|--help]    Display a usage summary"
-    echo "    [-c|--clean]      Clean up existing version before install"
-    echo "    [-d|--dev]        Install the dev 'datalab' package release"
-    echo "    [-e|--extensions] Install JupyterLab extensions"
-    echo "    [-k|--kernels]    Install all kernel specs in kernel-spec dir"
-    echo "    [-s|--stable]     Use the stable 'datalab' release (def: True)"
-    echo "    [-K <directory>]  Set kernel-spec dir (def: /data0/kernel-specs)"
-    exit
-
+  echo "Usage:"
+  echo "      $(basename $0) [options...]"
+  echo ""
+  echo "Options:"
+  echo "   [-h|-?|--help]        Display a usage summary"
+  echo "   [-a|--active]         Print active version"
+  echo "   [-c|--clean]          Clean up existing version before install"
+  echo "   [-d|--dev]            Install the dev 'datalab' package release"
+  echo "   [-e|--extensions]     Install JupyterLab extensions"
+  echo "   [-k|--kernels]        Install all kernel specs in kernel-spec dir"
+  echo "   [-s|--stable]         Use the stable 'datalab' release (def: True)"
+  echo " "
+  echo "   [-K <directory>]      Set kernel-spec dir (def: /data0/kernel-specs)"
+  echo "   [--kernel-dir <dir>]  Set kernel-spec dir (def: /data0/kernel-specs)"
+  echo "   [-R <directory>]      Set root dir (def: /data0)"
+  echo "   [--root-dir <dir>]    Set root dir (def: /data0)"
+  echo "   [-S <ver>]            Set the active software version"
+  echo "   [--set-version <ver>] Set the active software version"
+  echo " "
+  echo "   [--debug]             Enable debug output"
+  echo "   [--verbose]           Enable verbose output"
+  exit
 }
 
+function check_jupyter_running {
+  if [ `ps -efw | grep anaconda3/bin/jupyter | wc -l` -gt 1 ]; then
+    echo " "
+    echo "ERROR:  Detected a running Jupyter instance.  Please"
+    echo "        shut down the Jupyter server before continuing."
+    echo " "
+    exit 1
+  fi
+}
+
+function remind_jupyter_restart {
+  if [ `ps -efw | grep anaconda3/bin/jupyter | wc -l` -eq 1 ]; then
+    echo " "
+    echo "WARNING: Remember to restart Jupyter server in order"
+    echo "         for changes to take effect."
+    echo " "
+  fi
+}
+
+function verify_disk_structure {
+  nerr=0
+  if [ ! -e ${root_dir}"/sw" ]; then
+    echo "ERROR:  Directory ${root_dir}/sw does no exist"
+    nerr=nerr+1
+  fi
+  if [ ! -e ${root_dir}"/sw.hdd" ]; then
+    echo "ERROR:  Directory ${root_dir}/sw.hdd does no exist"
+    nerr=nerr+1
+    exit
+  fi
+  if [ ! -e ${root_dir}"/sw.tmpfs" ]; then
+    echo "ERROR:  Directory ${root_dir}/sw.tmpfs does no exist"
+    nerr=nerr+1
+  fi
+
+  if [ $nerr -gt 0 ]; then
+    exit
+  fi
+}
+
+function verify_active_version {
+  echo -n "Validating /data0/sw is $1 ... "
+  diff -rq --no-dereference ${root_dir}"/sw/" ${1}/ &> /dev/null
+  if [ $? == 0 ]; then
+    echo "OK"
+  else
+    echo "ERROR: ${root_dir}/sw and $1 differ"
+    exit
+  fi
+}
+
+# =======================================================================
+
+# ----------
+# Initialize
+# ----------
 prefix=`pwd -L`
 platform=`uname -m`
 os=`uname -s`
@@ -51,29 +116,132 @@ fi
 # --------------------
 # Process script args.
 # --------------------
-k_dir='/data0/kernel-specs'
-do_kernels=0
-do_clean=0
+version=''
+_debug=0
+_verbose=0
 do_dev=0
+do_clean=0
 do_stable=1
+do_active=0
+do_kernels=0
+root_dir='/data0'
+kernel_dir='/data0/kernel-specs'
+
 declare -a userargs skiplist
 while [ "$#" -gt 0 ]; do
     case $1 in
         -h|-\?|--help) usage;;
-        -k|--kernels) export do_kernels=1;;
+        -a|--active) export do_active=1;;
         -c|--clean) export do_clean=1;;
         -d|--dev) export do_dev=1;export do_stable=0;;
         -e|--extensions) export do_jupyterlab_extensions=1;;
+        -k|--kernels) export do_kernels=1;;
         -s|--stable) export do_stable=1;export do_dev=0;;
-        -K|--kernel-dir) shift;k_dir=$1;;
+        -K|--kernel-dir) shift;kernel_dir=$1;;
+        -R|--root-dir) shift;root_dir=$1;;
+        -S|--set-version) shift;version=$1;;
+        --debug) _debug=1;;
+        --verbose) _verbose=1;;
         *) userargs=("${userargs[@]}" "${1}");;
     esac; shift
 done
 
 
-echo "" && echo -n "Start: "
-/bin/date
-echo "" && echo ""
+
+# =========================================
+# See if we're printing the active version.
+# =========================================
+
+if [ $do_active == 1 ]; then
+
+  if [ $_debug == 1 ]; then echo "    Root directory: "${root_dir}; fi
+
+  # First check that we have the canonical directory structure
+  # we expect for this script.
+  verify_disk_structure
+
+  if [[ -L ${root_dir}"/sw.hdd" ]]; then
+    aver=`readlink -f ${root_dir}"/sw.hdd"`
+    echo "Active-version directory: "$aver
+  else
+    aver=`readlink -f ${root_dir}"/sw"`
+    echo "Active-version directory: "$aver
+  fi
+
+  # Verify that the active version is the same as ${root_dir}/sw
+  verify_active_version $aver
+
+  if [ $_verbose == 1 ]; then
+    if [[ -L /data0/sw ]]; then
+        echo "    /data0/sw link -> "`readlink -f /data0/sw`
+    else
+        echo "    /data0/sw is a directory"
+    fi
+
+    if [[ -L /data0/sw.hdd ]]; then
+        echo "    /data0/sw.hdd link -> "`readlink -f /data0/sw.hdd`
+    else
+        echo "    /data0/sw.hdd is a directory"
+    fi
+
+    if [[ -L /data0/sw.tmpfs ]]; then
+        echo "    /data0/sw.tmpfs link -> "`readlink -f /data0/sw.tmpfs`
+    elif [[ -d /data0/sw.tmpfs ]]; then
+        echo "    /data0/sw.tmpfs is a directory"
+    else
+        echo "    /data0/sw.tmpfs is does not exist"
+    fi
+  fi
+  exit
+fi
+
+
+# ========================================
+# See if we're resetting the version only.
+# ========================================
+
+if [ "$version" != "" ]; then
+
+    if [ `dirname $version` == '.' ]; then
+        vpath=${root_dir}"/"${version}
+    else
+        vpath=${version}
+    fi
+    echo "Resetting to version:  "$vpath
+
+    if [ -e ${vpath} ]; then
+        # If we're resetting the version in some way, be sure the Jupyter
+        # server has been shut down first.
+        check_jupyter_running
+
+        if [ $_verbose == 1 ]; then
+            echo -n "  Syncing files to active dir ... "
+        fi
+        cd ${root_dir}"/sw" && rsync -a --delete ${vpath}/ ./
+        if [ $_verbose == 1 ]; then
+            echo    "done"
+        fi
+
+        if [ -e ${root_dir}"/sw.hdd" ]; then
+          if [[ -L ${root_dir}"/sw.hdd" ]]; then
+            if [ $_verbose == 1 ]; then
+                echo -n "  Resetting sw.hdd link ... "
+            fi
+            
+            cd $root_dir && rm sw.hdd && ln -s ${vpath} ${root_dir}"/sw.hdd"
+            if [ $_verbose == 1 ]; then
+                echo    "done"
+            fi
+          fi
+        fi
+
+        remind_jupyter_restart
+    else
+        echo "ERROR: No such version directory: "${vpath}
+    fi
+    exit
+fi
+
 
 
 # ====================================
@@ -139,6 +307,7 @@ echo "----------------------------------------------"
 conda install -y \
     astor \
     astroml \
+    astroplan \
     astropy \
     astropy-helpers \
     astropy-healpix \
@@ -149,6 +318,7 @@ conda install -y \
     emcee \
     future \
     gatspy \
+    ginga \
     glueviz=0.14 \
     healpy \
     httplib2 \
@@ -310,9 +480,9 @@ if [ $do_kernels == 1 ]; then
     echo "----------------------------------------------"
     echo " Installing kernels ...."
     echo "----------------------------------------------"
-    if [ -e ${k_dir} ]; then
+    if [ -e ${kernel_dir} ]; then
         echo "Copying Kernel files .... "
-        cp -rp $k_dir/* $prefix/anaconda3/share/jupyter/kernels/
+        cp -rp $kernel_dir/* $prefix/anaconda3/share/jupyter/kernels/
     fi
 fi
 
@@ -336,4 +506,3 @@ echo "" && echo ""
 echo -n "End: "
 /bin/date
 echo ""
-
