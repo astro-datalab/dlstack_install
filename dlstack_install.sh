@@ -13,7 +13,7 @@ base_url="https://repo.continuum.io/archive/"	# Anaconda download repo
 # Optional installs (Note: not all of these build cleanly and should probably
 # be done manually when needed).
 
-export do_gavo=0
+export do_gavo=1
 export do_astrometry_dot_net=0
 export do_jupyterlab_extensions=0
 # ===========================================================================
