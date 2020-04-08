@@ -8,6 +8,7 @@ export SHELL=/bin/bash
 
 ver="2019.10"					# Anaconda version to install
 base_url="https://repo.continuum.io/archive/"	# Anaconda download repo
+base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
 # ===========================================================================
 # Optional installs (Note: not all of these build cleanly and should probably
@@ -366,6 +367,7 @@ pip install pafit
 pip install ppxf
 pip install PyQt5
 pip install vorbin
+pip install rebound
 pip install redis==2.10.6
 
 
