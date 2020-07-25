@@ -6,8 +6,7 @@
 export SHELL=/bin/bash
 
 
-ver="2019.10"					# Anaconda version to install
-base_url="https://repo.continuum.io/archive/"	# Anaconda download repo
+ver="2020.07"					# Anaconda version to install
 base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
 # ===========================================================================
