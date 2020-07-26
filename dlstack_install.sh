@@ -6,7 +6,7 @@
 export SHELL=/bin/bash
 
 
-ver="2020.07"					# Anaconda version to install
+ver="2020.02"					# Anaconda version to install
 base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
 # ===========================================================================
@@ -292,6 +292,11 @@ conda config --add channels https://conda.anaconda.org/pmuller
 
 # ============================================================================
 
+echo "" && echo ""
+echo -n "Start: "
+/bin/date
+echo ""
+
 # ===================
 # Anaconda Python 3.7
 # ===================
@@ -433,6 +438,10 @@ git clone https://github.com/noaodatalab/dlauthenticator
 
 
 # ------------------------------------------------------------------------
+# Recent Anaconda packages require a re-install of jupyterhub ...
+conda install -y jupyterhub
+
+# ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
     echo ""
     echo "----------------------------------------------"
@@ -447,8 +456,8 @@ if [ $do_jupyterlab_extensions == 1 ]; then
 
     jupyter labextension install @jupyterlab/hub-extension
 
-    jupyter labextension install @jupyterlab/toc
-    jupyter labextension install jupyterlab-drawio
+    #jupyter labextension install @jupyterlab/toc
+    #jupyter labextension install jupyterlab-drawio
     jupyter labextension install @lckr/jupyterlab_variableinspector
 
     conda install -c conda-forge -y ipyleaflet
@@ -456,7 +465,7 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     conda install -c conda-forge -y ipytree
 
     conda install -c conda-forge -y ipyvolume
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager
+    #jupyter labextension install @jupyter-widgets/jupyterlab-manager
     jupyter labextension install ipyvolume
     jupyter labextension install jupyter-threejs
 
@@ -468,7 +477,7 @@ if [ $do_jupyterlab_extensions == 1 ]; then
 
     jupyter labextension install jupyterlab-flake8
 
-    jupyter labextension install @jupyterlab/xkcd-extension
+    #jupyter labextension install @jupyterlab/xkcd-extension
 
     conda install -c wwt -y pywwt
 fi
