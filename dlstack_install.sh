@@ -309,46 +309,45 @@ echo "----------------------------------------------"
 # ===============
 # Conda Installs
 # ===============
-conda install -y \
-    astor \
-    astroml \
-    astroplan \
-    astropy \
-    astropy-helpers \
-    astropy-healpix \
-    astroquery \
-    autopep8 \
-    cx_oracle \
-    docker-py \
-    emcee \
-    future \
-    gatspy \
-    ginga \
-    glueviz=0.14 \
-    healpy \
-    httplib2 \
-    ipympl \
-    jupyterhub \
-    matplotlib \
-    mpi4py \
-    mysqlclient \
-    nodejs \
-    numpy \
-    openblas \
-    pandas \
-    passlib \
-    psycopg2 \
-    photutils \
-    pyopengl \
-    pyvo \
-    simplejson \
-    speclite \
-    specutils \
-    tensorflow \
-    termcolor \
-    uwsgi \
-    virtualenv \
-    wget
+
+conda install -y astor
+conda install -y astroml
+conda install -y astroplan
+conda install -y astropy
+conda install -y astropy-helpers
+conda install -y astropy-healpix
+conda install -y astroquery
+conda install -y autopep8
+conda install -y docker-py
+conda install -y emcee
+conda install -y future
+conda install -y gatspy
+conda install -y ginga
+conda install -y glueviz=0.14
+conda install -y healpy
+conda install -y httplib2
+conda install -y ipympl
+conda install -y jupyterhub
+conda install -y matplotlib
+conda install -y mpi4py
+conda install -y mysqlclient
+conda install -y nodejs
+conda install -y numpy
+conda install -y openblas
+conda install -y pandas
+conda install -y passlib
+conda install -y psycopg2
+conda install -y photutils
+conda install -y pyopengl
+conda install -y pyvo
+conda install -y simplejson
+conda install -y speclite
+conda install -y specutils
+conda install -y tensorflow
+conda install -y termcolor
+conda install -y uwsgi
+conda install -y virtualenv
+conda install -y wget
 
 
 # ===============
@@ -365,6 +364,7 @@ pip install easyaccess
 pip install h5py==2.9.0
 pip install lmfit
 pip install jampy
+pip install jupyterhub-idle-culler
 pip install mgefit
 pip install mpdaf
 pip install pafit
