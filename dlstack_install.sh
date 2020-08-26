@@ -373,6 +373,8 @@ pip install PyQt5
 pip install vorbin
 pip install rebound
 pip install redis==2.10.6
+pip install aiohttp
+pip install montage-wrapper
 
 
 # Obsolete packages, included here for documentation only
