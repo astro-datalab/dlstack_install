@@ -6,8 +6,7 @@
 export SHELL=/bin/bash
 
 
-ver="2019.10"					# Anaconda version to install
-base_url="https://repo.continuum.io/archive/"	# Anaconda download repo
+ver="2020.07"					# Anaconda version to install
 base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
 # ===========================================================================
@@ -293,6 +292,11 @@ conda config --add channels https://conda.anaconda.org/pmuller
 
 # ============================================================================
 
+echo "" && echo ""
+echo -n "Start: "
+/bin/date
+echo ""
+
 # ===================
 # Anaconda Python 3.7
 # ===================
@@ -305,46 +309,41 @@ echo "----------------------------------------------"
 # ===============
 # Conda Installs
 # ===============
-conda install -y \
-    astor \
-    astroml \
-    astroplan \
-    astropy \
-    astropy-helpers \
-    astropy-healpix \
-    astroquery \
-    autopep8 \
-    cx_oracle \
-    docker-py \
-    emcee \
-    future \
-    gatspy \
-    ginga \
-    glueviz=0.14 \
-    healpy \
-    httplib2 \
-    ipympl \
-    jupyterhub \
-    matplotlib \
-    mpi4py \
-    mysqlclient \
-    nodejs \
-    numpy \
-    openblas \
-    pandas \
-    passlib \
-    psycopg2 \
-    photutils \
-    pyopengl \
-    pyvo \
-    simplejson \
-    speclite \
-    specutils \
-    tensorflow \
-    termcolor \
-    uwsgi \
-    virtualenv \
-    wget
+#conda install -y uwsgi jupyterhub nodejs PyQt5 tensorflow openblas mysqlclient
+conda install -y uwsgi nodejs PyQt5 tensorflow openblas mysqlclient
+conda install -y mpi4py
+
+pip install astor
+pip install astroml
+pip install astroplan
+pip install astropy
+pip install astropy-helpers
+pip install astropy-healpix
+pip install astroquery
+pip install autopep8
+pip install docker-py
+pip install emcee
+pip install future
+pip install gatspy
+pip install ginga
+pip install "glueviz==0.14"
+pip install healpy
+pip install httplib2
+pip install ipympl
+pip install matplotlib
+pip install numpy
+pip install pandas
+pip install passlib
+pip install psycopg2
+pip install photutils
+pip install pyopengl
+pip install pyvo
+pip install simplejson
+pip install speclite
+pip install specutils
+pip install termcolor
+pip install virtualenv
+pip install wget
 
 
 # ===============
@@ -357,15 +356,13 @@ if [ $do_stable == 1 ]; then
 fi
 pip install astrocalc
 pip install batman-package
-pip install easyaccess
-pip install h5py==2.9.0
+pip install h5py==2.10.0
 pip install lmfit
 pip install jampy
 pip install mgefit
 pip install mpdaf
 pip install pafit
 pip install ppxf
-pip install PyQt5
 pip install vorbin
 pip install rebound
 pip install redis==2.10.6
@@ -434,44 +431,55 @@ git clone https://github.com/noaodatalab/dlauthenticator
 
 
 # ------------------------------------------------------------------------
+# Recent Anaconda packages require a re-install of jupyterhub ...
+conda install -y jupyterhub
+#pip install jupyterhub --force-reinstall
+
+# ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
     echo ""
     echo "----------------------------------------------"
     echo " Installing JupyterLab packages ...."
     echo "----------------------------------------------"
 
-    conda install -c conda-forge -y ipywidgets		# enabled automatically
-
-    jupyter labextension install jupyterlab_bokeh
-
-    conda install -c plotly -y jupyterlab-dash
+    #conda install -c conda-forge -y ipywidgets		# enabled automatically
+    pip install ipywidgets				# enabled automatically?
 
     jupyter labextension install @jupyterlab/hub-extension
 
-    jupyter labextension install @jupyterlab/toc
-    jupyter labextension install jupyterlab-drawio
-    jupyter labextension install @lckr/jupyterlab_variableinspector
+    #conda install -c plotly -y jupyterlab-dash
+    pip install jupyterlab-dash
 
-    conda install -c conda-forge -y ipyleaflet
+    #jupyter labextension install @jupyterlab/toc
+    #jupyter labextension install jupyterlab-drawio
+    #jupyter labextension install @lckr/jupyterlab_variableinspector
 
-    conda install -c conda-forge -y ipytree
+    #conda install -c conda-forge -y ipyleaflet
+    #conda install -c conda-forge -y ipytree
+    #conda install -c conda-forge -y ipyvolume
+    pip install ipyleaflet
+    pip install ipytree
+    pip install ipyvolume
 
-    conda install -c conda-forge -y ipyvolume
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager
-    jupyter labextension install ipyvolume
-    jupyter labextension install jupyter-threejs
-
-    conda install -c conda-forge -y qgrid
+    #conda install -c conda-forge -y qgrid
+    pip install qgrid
     jupyter labextension install qgrid
 
     pip install sidecar
     jupyter labextension install @jupyter-widgets/jupyterlab-sidecar
 
+    #jupyter labextension install @jupyterlab/xkcd-extension
+    #jupyter labextension install @jupyter-widgets/jupyterlab-manager
+    #jupyter labextension install jupyterlab_bokeh	# wrong version
+
+#    jupyter labextension install @lckr/jupyterlab_variableinspector
+    jupyter labextension install jupyter-threejs		# build fail
     jupyter labextension install jupyterlab-flake8
+    jupyter labextension install ipyvolume			# build fail
 
-    jupyter labextension install @jupyterlab/xkcd-extension
 
-    conda install -c wwt -y pywwt
+    #conda install -c wwt -y pywwt
+    pip install pywwt
 fi
 jupyter lab build
 
@@ -497,7 +505,10 @@ echo "----------------------------------------------"
 if [ ! -d ./downloads ]; then
     mkdir downloads
 fi
-mv Anaconda*.sh *.gz datalab dlauthenticator downloads
+if [ $do_dev == 1 ]; then
+    mv datalab downloads
+fi
+mv Anaconda*.sh *.gz gavo* get-pip.py dlauthenticator downloads
 conda clean -y -a
 
 # Create the local manifest file.
