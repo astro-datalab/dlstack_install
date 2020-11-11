@@ -331,6 +331,7 @@ pip install healpy
 pip install httplib2
 pip install ipympl
 pip install matplotlib
+pip install nbresuse
 pip install numpy
 pip install pandas
 pip install passlib
