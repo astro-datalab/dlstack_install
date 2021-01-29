@@ -323,6 +323,7 @@ pip install astroquery
 pip install autopep8
 pip install docker-py
 pip install emcee
+pip install fitsio
 pip install future
 pip install gatspy
 pip install ginga
