@@ -338,6 +338,7 @@ pip install pandas
 pip install passlib
 pip install psycopg2
 pip install photutils
+pip install pycurl-requests
 pip install pyopengl
 pip install pyvo
 pip install simplejson
