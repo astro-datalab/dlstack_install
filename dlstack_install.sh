@@ -373,8 +373,6 @@ pip install vorbin
 pip install rebound
 pip install redis==2.10.6
 
-pip install git+https://github.com/desihub/prospect.git@1.1.0 
-
 
 # Obsolete packages, included here for documentation only
 #conda install -y pyfits
