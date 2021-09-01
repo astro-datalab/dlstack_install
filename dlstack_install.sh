@@ -7,6 +7,7 @@ export SHELL=/bin/bash
 
 
 ver="2020.07"					# Anaconda version to install
+ver="2021.05"					# Anaconda version to install
 base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
 # ===========================================================================
@@ -337,7 +338,9 @@ pip install numpy
 pip install pandas
 pip install passlib
 pip install psycopg2
+pip install pathlib
 pip install photutils
+pip install prospect
 pip install pycurl-requests
 pip install pyopengl
 pip install pyvo
