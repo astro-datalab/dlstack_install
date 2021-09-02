@@ -340,7 +340,7 @@ pip install passlib
 pip install psycopg2
 pip install pathlib
 pip install photutils
-pip install git+https://github.com/desipub/prospect.git@1.2.0
+pip install git+https://github.com/desihub/prospect.git@1.2.0
 pip install pycurl-requests
 pip install pyopengl
 pip install pyvo
