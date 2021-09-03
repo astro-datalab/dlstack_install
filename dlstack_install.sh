@@ -287,6 +287,8 @@ conda config --add channels conda-forge
 conda config --add channels astropy
 conda config --add channels glueviz
 conda config --add channels plotly
+conda config --add channels anaconda
+conda config --add channels fermi
 conda config --add channels https://conda.anaconda.org/als832
 conda config --add channels https://conda.anaconda.org/pmuller
 
@@ -313,6 +315,8 @@ echo "----------------------------------------------"
 #conda install -y uwsgi jupyterhub nodejs PyQt5 tensorflow openblas mysqlclient
 conda install -y uwsgi nodejs PyQt5 tensorflow openblas mysqlclient
 conda install -y mpi4py
+conda install -y -c anaconda libgcc-ng
+conda install -c conda-forge -c fermi fermitools clhep=2.4.4.1
 
 pip install astor
 pip install astroml
