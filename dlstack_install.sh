@@ -288,7 +288,6 @@ conda config --add channels astropy
 conda config --add channels glueviz
 conda config --add channels plotly
 conda config --add channels anaconda
-conda config --add channels fermi
 conda config --add channels https://conda.anaconda.org/als832
 conda config --add channels https://conda.anaconda.org/pmuller
 
@@ -315,9 +314,14 @@ echo "----------------------------------------------"
 #conda install -y uwsgi jupyterhub nodejs PyQt5 tensorflow openblas mysqlclient
 conda install -y uwsgi nodejs PyQt5 tensorflow openblas mysqlclient
 conda install -y mpi4py
-conda install -y -c anaconda libgcc-ng
-conda install -c conda-forge -c fermi fermitools clhep=2.4.4.1
 
+
+# ===============
+# PIP Installs
+# ===============
+pip install --upgrade pip
+
+pip install astrocalc
 pip install astor
 pip install astroml
 pip install astroplan
@@ -326,6 +330,7 @@ pip install astropy-helpers
 pip install astropy-healpix
 pip install astroquery
 pip install autopep8
+pip install batman-package
 pip install docker-py
 pip install emcee
 pip install fitsio
@@ -333,14 +338,27 @@ pip install future
 pip install gatspy
 pip install ginga
 pip install "glueviz==0.14"
+pip install h5py==2.10.0
 pip install healpy
 pip install httplib2
 pip install ipympl
+pip install jampy
+pip install jupyterhub==1.4.2
+pip install lmfit
 pip install matplotlib
+pip install mgefit
+pip install mpdaf
 pip install nbresuse
+if [ $do_stable == 1 ]; then
+    pip install noaodatalab
+else
+    pip install git+https://github.com/noaodatalab/datalab
+fi
 pip install numpy
+pip install pafit
 pip install pandas
 pip install passlib
+pip install ppxf
 pip install psycopg2
 pip install pathlib
 pip install photutils
@@ -348,34 +366,15 @@ pip install git+https://github.com/desihub/prospect.git@1.2.0
 pip install pycurl-requests
 pip install pyopengl
 pip install pyvo
+pip install rebound
+pip install redis==2.10.6
 pip install simplejson
 pip install speclite
 pip install specutils
 pip install termcolor
 pip install virtualenv
-pip install wget
-
-
-# ===============
-# PIP Installs
-# ===============
-pip install --upgrade pip
-
-if [ $do_stable == 1 ]; then
-    pip install noaodatalab
-fi
-pip install astrocalc
-pip install batman-package
-pip install h5py==2.10.0
-pip install lmfit
-pip install jampy
-pip install mgefit
-pip install mpdaf
-pip install pafit
-pip install ppxf
 pip install vorbin
-pip install rebound
-pip install redis==2.10.6
+pip install wget
 
 
 # Obsolete packages, included here for documentation only
