@@ -344,6 +344,7 @@ pip install httplib2
 pip install ipympl
 pip install jampy
 pip install jupyterhub==1.4.2
+pip install jupyterlab>=3.1.9
 pip install lmfit
 pip install matplotlib
 pip install mgefit
