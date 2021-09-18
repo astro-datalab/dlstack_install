@@ -277,7 +277,7 @@ export PWD=$prefix && sh $fname -b -u -p $prefix/anaconda3
 # Set the PATH to pick up the new conda install directory.
 export PATH=$prefix/anaconda3/bin:$path:/bin:/usr/bin
 
-# Download the PIP installer.
+# Download the latest PIP installer.
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 anaconda3/bin/python get-pip.py
 
@@ -342,9 +342,11 @@ pip install h5py==2.10.0
 pip install healpy
 pip install httplib2
 pip install ipympl
+pip install ipython==7.12.0
 pip install jampy
 pip install jupyterhub==1.4.2
-pip install jupyterlab>=3.1.9
+pip install jupyterlab==3.1.11
+pip install jupyter-nbextensions-configurator
 pip install lmfit
 pip install matplotlib
 pip install mgefit
@@ -363,7 +365,7 @@ pip install ppxf
 pip install psycopg2
 pip install pathlib
 pip install photutils
-pip install git+https://github.com/desihub/prospect.git@1.2.0
+#pip install git+https://github.com/desihub/prospect.git@1.2.0
 pip install pycurl-requests
 pip install pyopengl
 pip install pyvo
@@ -439,6 +441,12 @@ fi
 git clone https://github.com/noaodatalab/dlauthenticator
 ( cd dlauthenticator ; python setup.py install )
 
+# Install the PROSPECT viewer
+git clone -q https://github.com/desihub/prospect.git
+( cd prospect ; \
+    git checkout -q 87479dbcdf1ed4720fb6eeb74eba571432fabe41 ; \
+    python setup.py install )
+
 
 # ------------------------------------------------------------------------
 # Recent Anaconda packages require a re-install of jupyterhub ...
@@ -487,9 +495,10 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     jupyter labextension install jupyterlab-flake8
     jupyter labextension install ipyvolume			# build fail
 
-
     #conda install -c wwt -y pywwt
     pip install pywwt
+
+    jupyter serverextension nbextens_configurator enable --user
 fi
 jupyter lab build
 
