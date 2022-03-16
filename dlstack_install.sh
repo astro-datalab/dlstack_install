@@ -354,9 +354,9 @@ pip install mpdaf
 pip install mysql-connector-python
 pip install nbresuse
 if [ $do_stable == 1 ]; then
-    pip install noaodatalab
+    pip install astro-datalab
 else
-    pip install git+https://github.com/noaodatalab/datalab
+    pip install git+https://github.com/astro-datalab/datalab
 fi
 pip install numpy
 pip install pafit
@@ -434,12 +434,12 @@ echo "----------------------------------------------"
 
 # Install the Data Lab client package and authenticator
 if [ $do_dev == 1 ]; then
-    git clone http://github.com/noaodatalab/datalab.git
+    git clone http://github.com/astro-datalab/datalab.git
     ( cd datalab ; python setup.py install )
 fi
 
 # Clone the Data Lab Authenticator
-git clone https://github.com/noaodatalab/dlauthenticator
+git clone https://github.com/astro-datalab/dlauthenticator
 ( cd dlauthenticator ; python setup.py install )
 
 # Install the PROSPECT viewer
