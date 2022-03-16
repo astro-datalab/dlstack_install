@@ -311,8 +311,8 @@ echo "----------------------------------------------"
 # ===============
 # Conda Installs
 # ===============
-#conda install -y uwsgi jupyterhub nodejs PyQt5 tensorflow openblas mysqlclient
-conda install -y uwsgi nodejs PyQt5 tensorflow openblas mysqlclient
+conda install -y nodejs=12.4.0 -c conda-forge
+conda install -y uwsgi PyQt5 tensorflow openblas mysqlclient
 conda install -y mpi4py
 
 
