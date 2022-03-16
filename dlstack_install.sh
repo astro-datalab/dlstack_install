@@ -335,6 +335,8 @@ pip install docker-py
 pip install emcee
 pip install "fitsio==1.1.5"
 pip install future
+pip install flask
+pip install flask_cors
 pip install gatspy
 pip install ginga
 pip install "glueviz==0.14"
