@@ -351,6 +351,7 @@ pip install lmfit
 pip install matplotlib
 pip install mgefit
 pip install mpdaf
+pip install mysql-connector-python
 pip install nbresuse
 if [ $do_stable == 1 ]; then
     pip install noaodatalab
