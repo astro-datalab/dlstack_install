@@ -334,6 +334,7 @@ pip install astropy-healpix
 pip install astroquery
 pip install autopep8
 pip install batman-package
+pip install cherrypy
 pip install docker-py
 pip install emcee
 pip install "fitsio==1.1.5"
