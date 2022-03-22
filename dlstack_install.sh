@@ -311,15 +311,18 @@ echo "----------------------------------------------"
 # ===============
 # Conda Installs
 # ===============
-conda install -y nodejs=12.4.0 -c conda-forge
-conda install -y uwsgi PyQt5 tensorflow openblas mysqlclient
-conda install -y mpi4py
+conda install -y --freeze-installed  nodejs=12.4.0
+conda install -y --freeze-installed  uwsgi tensorflow openblas mysqlclient
+conda install -y --freeze-installed  mpi4py
 
 
 # ===============
 # PIP Installs
 # ===============
 pip install --upgrade pip
+
+#pip install spyder                      # for dependency resolution below
+#pip install pyqt5 pyqtwebengine
 
 pip install astrocalc
 pip install astor
@@ -356,7 +359,9 @@ pip install mpdaf
 pip install mysql-connector-python
 pip install nbresuse
 if [ $do_stable == 1 ]; then
-    pip install astro-datalab
+    #pip install astro-datalab
+    git clone http://github.com/astro-datalab/datalab.git
+    ( cd datalab ; python setup.py install )
 else
     pip install git+https://github.com/astro-datalab/datalab
 fi
@@ -373,7 +378,8 @@ pip install pycurl-requests
 pip install pyopengl
 pip install pyvo
 pip install rebound
-pip install redis==2.10.6
+#pip install redis==2.10.6
+pip install redis
 pip install simplejson
 pip install speclite
 pip install specutils
@@ -382,6 +388,11 @@ pip install virtualenv
 pip install vorbin
 pip install wget
 
+
+pip uninstall --force spyder            # for dependency resolution below
+pip uninstall --force pyqt5 pyqtwebengine
+pip install spyder
+pip install pyqt5 pyqtwebengine
 
 # Obsolete packages, included here for documentation only
 #conda install -y pyfits
@@ -416,12 +427,18 @@ if [ $do_gavo == 1 ]; then
     tar zxf gavoutils-latest.tar.gz
 
     # Patch the gavoutils/gavo/utils/ostricks.py file
-    s=`cat gavoutils-${gavo_ver}/gavo/utils/ostricks.py | grep -n ^try | cut -f 1 --delim=':'`
-    e=`cat gavoutils-${gavo_ver}/gavo/utils/ostricks.py | grep -n import\ HTTPSHandler | cut -f 1 --delim=':'`
-    cat gavoutils-${gavo_ver}/gavo/utils/ostricks.py | \
-      sed -e "${s},${e}d" -e "97ifrom urllib2 import HTTPSHandler" > /tmp/os.$$
-    mv /tmp/os.$$ gavoutils-${gavo_ver}/gavo/utils/ostricks.py
+    #s=`cat gavoutils-${gavo_ver}/gavo/utils/ostricks.py | grep -n ^try | cut -f 1 --delim=':'`
+    #e=`cat gavoutils-${gavo_ver}/gavo/utils/ostricks.py | grep -n import\ HTTPSHandler | cut -f 1 --delim=':'`
+    #cat gavoutils-${gavo_ver}/gavo/utils/ostricks.py | \
+    #  sed -e "${s},${e}d" -e "97ifrom urllib2 import HTTPSHandler" > /tmp/os.$$
+    #mv /tmp/os.$$ gavoutils-${gavo_ver}/gavo/utils/ostricks.py
 
+    # Remove pre-built binaries
+    (cd gavoutils-$gavo_ver  ; find . -name __pycache__ -exec /bin/rm -rf {} \;)
+    (cd gavovot-$gavo_ver    ; find . -name __pycache__ -exec /bin/rm -rf {} \;)
+    (cd gavostc-$gavo_ver    ; find . -name __pycache__ -exec /bin/rm -rf {} \;)
+
+    # Install the packages.
     (cd gavoutils-$gavo_ver  ; python setup.py install)
     (cd gavovot-$gavo_ver    ; python setup.py install)
     (cd gavostc-$gavo_ver    ; python setup.py install)
