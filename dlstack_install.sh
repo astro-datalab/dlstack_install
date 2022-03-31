@@ -436,9 +436,15 @@ if [ $do_gavo == 1 ]; then
     #mv /tmp/os.$$ gavoutils-${gavo_ver}/gavo/utils/ostricks.py
 
     # Remove pre-built binaries
+    (cd gavoutils-$gavo_ver  ; find . -name \*.pyc -exec /bin/rm -rf {} \;)
+    (cd gavovot-$gavo_ver    ; find . -name \*.pyc -exec /bin/rm -rf {} \;)
+    (cd gavostc-$gavo_ver    ; find . -name \*.pyc -exec /bin/rm -rf {} \;)
     (cd gavoutils-$gavo_ver  ; find . -name __pycache__ -exec /bin/rm -rf {} \;)
     (cd gavovot-$gavo_ver    ; find . -name __pycache__ -exec /bin/rm -rf {} \;)
     (cd gavostc-$gavo_ver    ; find . -name __pycache__ -exec /bin/rm -rf {} \;)
+    (cd gavoutils-$gavo_ver  ; find . -name build -exec /bin/rm -rf {} \;)
+    (cd gavovot-$gavo_ver    ; find . -name build -exec /bin/rm -rf {} \;)
+    (cd gavostc-$gavo_ver    ; find . -name build -exec /bin/rm -rf {} \;)
 
     # Install the packages.
     (cd gavoutils-$gavo_ver  ; python setup.py install)
