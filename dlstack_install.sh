@@ -382,6 +382,7 @@ pip install pyvo
 pip install rebound
 #pip install redis==2.10.6
 pip install redis
+pip install Shapely==1.8.1.post1
 pip install simplejson
 pip install speclite
 pip install specutils
