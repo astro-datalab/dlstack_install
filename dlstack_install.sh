@@ -344,9 +344,10 @@ pip install psycopg2
 pip install pycurl-requests
 pip install pyvo
 pip install pandas
-pip install redis==2.10.6
+pip install rebound
+pip install redis
+pip install Shapely==1.8.1.post1
 pip install simplejson
-
 
 if [ do_managers_only == 0 ]; then
     pip install astor
