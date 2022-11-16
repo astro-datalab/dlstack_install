@@ -6,8 +6,9 @@
 export SHELL=/bin/bash
 
 
-ver="2020.07"					# Anaconda version to install
+#ver="2020.07"					# Anaconda version to install
 ver="2021.05"					# Anaconda version to install
+#ver="2022.05"					# Anaconda version to install
 base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
 # ===========================================================================
@@ -125,6 +126,7 @@ do_clean=0
 do_stable=1
 do_active=0
 do_kernels=0
+do_managers_only=0
 root_dir='/data0'
 kernel_dir='/data0/kernel-specs'
 
@@ -137,6 +139,7 @@ while [ "$#" -gt 0 ]; do
         -d|--dev) export do_dev=1;export do_stable=0;;
         -e|--extensions) export do_jupyterlab_extensions=1;;
         -k|--kernels) export do_kernels=1;;
+        -m|--managers) export do_managers_only=1;;
         -s|--stable) export do_stable=1;export do_dev=0;;
         -K|--kernel-dir) shift;kernel_dir=$1;;
         -R|--root-dir) shift;root_dir=$1;;
@@ -251,7 +254,8 @@ fi
 if [ $do_clean == 1 ]; then
     echo "# ------------------------------------"
     echo -n "Cleaning old install ..... "
-    /bin/rm -rf ./anaconda3 ./downloads ./get-pip.py ./MANIFEST
+    #/bin/rm -rf ./anaconda3 ./downloads ./get-pip.py ./MANIFEST
+    /bin/rm -rf ./anaconda3 ./downloads ./MANIFEST
     echo "Done"
     echo "# ------------------------------------"
 fi
@@ -278,8 +282,8 @@ export PWD=$prefix && sh $fname -b -u -p $prefix/anaconda3
 export PATH=$prefix/anaconda3/bin:$path:/bin:/usr/bin
 
 # Download the latest PIP installer.
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-anaconda3/bin/python get-pip.py
+#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+#anaconda3/bin/python get-pip.py
 
 # Update conda and install configs
 conda update -n base -c defaults -y conda
@@ -300,7 +304,7 @@ echo -n "Start: "
 echo ""
 
 # ===================
-# Anaconda Python 3.7
+# Anaconda Python 3.8
 # ===================
 
 echo ""
@@ -311,9 +315,12 @@ echo "----------------------------------------------"
 # ===============
 # Conda Installs
 # ===============
-conda install -y nodejs=12.4.0 -c conda-forge
-conda install -y uwsgi PyQt5 tensorflow openblas mysqlclient
-conda install -y mpi4py
+#conda install -y --freeze-installed  uwsgi
+if [ do_managers_only == 0 ]; then
+    conda install -y --freeze-installed  nodejs=12.4.0
+    conda install -y --freeze-installed  tensorflow openblas mysqlclient
+    conda install -y --freeze-installed  mpi4py
+fi
 
 
 # ===============
@@ -321,64 +328,83 @@ conda install -y mpi4py
 # ===============
 pip install --upgrade pip
 
-pip install astrocalc
-pip install astor
-pip install astroml
-pip install astroplan
+pip install flask
+pip install flask_cors
+
 pip install astropy
 pip install astropy-helpers
 pip install astropy-healpix
 pip install astroquery
-pip install autopep8
-pip install batman-package
-pip install docker-py
-pip install emcee
-pip install "fitsio==1.1.5"
-pip install future
-pip install gatspy
-pip install ginga
-pip install "glueviz==0.14"
-pip install h5py==2.10.0
+pip install astrocalc
 pip install healpy
 pip install httplib2
-pip install ipympl
-pip install ipython==7.12.0
-pip install jampy
-pip install jupyterhub==1.4.2
-pip install jupyterlab==3.1.11
-pip install jupyter-nbextensions-configurator
-pip install lmfit
-pip install matplotlib
-pip install mgefit
-pip install mpdaf
-pip install mysql-connector-python
-pip install nbresuse
-if [ $do_stable == 1 ]; then
-    pip install noaodatalab
-else
-    pip install git+https://github.com/noaodatalab/datalab
-fi
 pip install numpy
-pip install pafit
-pip install pandas
-pip install passlib
-pip install ppxf
-pip install psycopg2
 pip install pathlib
-pip install photutils
-#pip install git+https://github.com/desihub/prospect.git@1.2.0
+pip install psycopg2
 pip install pycurl-requests
-pip install pyopengl
 pip install pyvo
-pip install rebound
+pip install pandas
 pip install redis==2.10.6
 pip install simplejson
-pip install speclite
-pip install specutils
-pip install termcolor
-pip install virtualenv
-pip install vorbin
-pip install wget
+
+
+if [ do_managers_only == 0 ]; then
+    pip install astor
+    pip install astroml
+    pip install astroplan
+    pip install autopep8
+    pip install batman-package
+    pip install docker-py
+    pip install emcee
+    pip install "fitsio==1.1.5"
+    pip install future
+    pip install gatspy
+    pip install ginga
+    pip install "glueviz==0.14"
+    pip install h5py==2.10.0
+    pip install ipympl
+    pip install ipython==7.12.0
+    pip install jampy
+    pip install jupyterhub==1.4.2
+    pip install jupyterlab==3.1.11
+    pip install jupyter-nbextensions-configurator
+    pip install lmfit
+    pip install matplotlib
+    pip install mgefit
+    pip install mpdaf
+    pip install nbresuse
+    if [ $do_stable == 1 ]; then
+        #pip install astro-datalab
+        git clone http://github.com/astro-datalab/datalab.git
+        ( cd datalab ; python setup.py install )
+
+        #pip install fits2db
+        git clone http://github.com/astro-datalab/fits2db
+        ( cd fits2db ; python setup.py install )
+    else
+        pip install git+https://github.com/astro-datalab/datalab
+        pip install git+https://github.com/astro-datalab/fits2db
+    fi
+    pip install pafit
+    pip install passlib
+    pip install ppxf
+    pip install photutils
+    #pip install git+https://github.com/desihub/prospect.git@1.2.0
+    pip install pyopengl
+    pip install rebound
+    pip install sparclclient==1.0.0
+    pip install speclite
+    pip install specutils
+    pip install termcolor
+    pip install virtualenv
+    pip install vorbin
+    pip install wget
+
+    pip uninstall --force spyder            # for dependency resolution below
+    pip uninstall --force pyqt5 pyqtwebengine
+    pip install spyder
+    pip install pyqt5 pyqtwebengine
+fi
 
 
 # Obsolete packages, included here for documentation only
@@ -434,12 +460,12 @@ echo "----------------------------------------------"
 
 # Install the Data Lab client package and authenticator
 if [ $do_dev == 1 ]; then
-    git clone http://github.com/noaodatalab/datalab.git
+    git clone http://github.com/astro-datalab/datalab.git
     ( cd datalab ; python setup.py install )
 fi
 
 # Clone the Data Lab Authenticator
-git clone https://github.com/noaodatalab/dlauthenticator
+git clone https://github.com/astro-datalab/dlauthenticator
 ( cd dlauthenticator ; python setup.py install )
 
 # Install the PROSPECT viewer
@@ -528,7 +554,8 @@ fi
 if [ $do_dev == 1 ]; then
     mv datalab downloads
 fi
-mv Anaconda*.sh *.gz gavo* get-pip.py dlauthenticator downloads
+#mv Anaconda*.sh *.gz gavo* get-pip.py dlauthenticator downloads
+mv Anaconda*.sh *.gz gavo* dlauthenticator downloads
 conda clean -y -a
 
 # Create the local manifest file.
