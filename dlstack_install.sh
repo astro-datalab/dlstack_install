@@ -331,6 +331,7 @@ pip install --upgrade pip
 pip install flask
 pip install flask_cors
 
+pip install "antares-client==1.2.0"
 pip install astropy
 pip install astropy-helpers
 pip install astropy-healpix
@@ -392,6 +393,7 @@ if [ do_managers_only == 0 ]; then
     pip install photutils
     #pip install git+https://github.com/desihub/prospect.git@1.2.0
     pip install pyopengl
+    pip install pyzdcf
     pip install rebound
     pip install sparclclient==1.0.0
     pip install speclite
@@ -475,6 +477,10 @@ git clone -q https://github.com/desihub/prospect.git
     git checkout -q 87479dbcdf1ed4720fb6eeb74eba571432fabe41 ; \
     python setup.py install )
 
+# Install the unTimely Catalog explorer viewer
+git clone https://github.com/fkiwy/unTimely_Catalog_explorer.git
+(cd unTimely_Catalog_explorer ; \
+    python setup.py install )
 
 # ------------------------------------------------------------------------
 # Recent Anaconda packages require a re-install of jupyterhub ...
@@ -556,7 +562,7 @@ if [ $do_dev == 1 ]; then
     mv datalab downloads
 fi
 #mv Anaconda*.sh *.gz gavo* get-pip.py dlauthenticator downloads
-mv Anaconda*.sh *.gz gavo* dlauthenticator downloads
+mv Anaconda*.sh *.gz gavo* dlauthenticator unTimely* downloads
 conda clean -y -a
 
 # Create the local manifest file.
