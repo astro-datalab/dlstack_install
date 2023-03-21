@@ -316,7 +316,7 @@ echo "----------------------------------------------"
 # Conda Installs
 # ===============
 #conda install -y --freeze-installed  uwsgi
-if [ do_managers_only == 0 ]; then
+if [ $do_managers_only == 0 ]; then
     conda install -y --freeze-installed  nodejs=12.4.0
     conda install -y --freeze-installed  tensorflow openblas mysqlclient
     conda install -y --freeze-installed  mpi4py
@@ -350,7 +350,7 @@ pip install redis
 pip install Shapely==1.8.1.post1
 pip install simplejson
 
-if [ do_managers_only == 0 ]; then
+if [ $do_managers_only == 0 ]; then
     pip install astor
     pip install astroml
     pip install astroplan
@@ -370,6 +370,7 @@ if [ do_managers_only == 0 ]; then
     pip install jupyterhub==1.4.2
     pip install jupyterlab==3.1.11
     pip install jupyter-nbextensions-configurator
+    pip install jupyterhub-idle-culler
     pip install lmfit
     pip install matplotlib
     pip install mgefit
@@ -418,7 +419,7 @@ fi
 #pip install fitsio			# Not Py3 compatible
 
 
-if [ do_astrometry_dot_net == 1 ]; then
+if [ $do_astrometry_dot_net == 1 ]; then
     echo "----------------------------------------------"
     echo " Installing astrometry.net packages ...."
     echo "----------------------------------------------"
@@ -479,13 +480,13 @@ git clone -q https://github.com/desihub/prospect.git
 
 # Install the unTimely Catalog explorer viewer
 git clone https://github.com/fkiwy/unTimely_Catalog_explorer.git
-(cd unTimely_Catalog_explorer ; \
-    python setup.py install )
+(cd unTimely_Catalog_explorer ; python setup.py install )
+
 
 # ------------------------------------------------------------------------
 # Recent Anaconda packages require a re-install of jupyterhub ...
-conda install -y jupyterhub
-#pip install jupyterhub --force-reinstall
+#conda install -y jupyterhub
+pip install jupyterhub --force-reinstall
 
 # ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
@@ -530,11 +531,12 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     jupyter labextension install ipyvolume			# build fail
 
     #conda install -c wwt -y pywwt
-    pip install pywwt
+    #pip install pywwt
 
     jupyter serverextension nbextens_configurator enable --user
 fi
-jupyter lab build
+#jupyter lab build
+jupyter lab build --dev-build=False --minimize=False
 
 
 # ------------------------------------------------------------------------
