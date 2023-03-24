@@ -370,11 +370,14 @@ if [ $do_managers_only == 0 ]; then
     pip install jupyterhub==1.4.2
     pip install jupyterlab==3.1.11
     pip install jupyter-nbextensions-configurator
+    pip install jupyter_contrib_nbextensions
     pip install jupyterhub-idle-culler
     pip install lmfit
     pip install matplotlib
     pip install mgefit
     pip install mpdaf
+    pip install nbconvert==6.4.4
+    pip install jinja2==3.0.3
     pip install nbresuse
     if [ $do_stable == 1 ]; then
         #pip install astro-datalab
@@ -535,8 +538,7 @@ if [ $do_jupyterlab_extensions == 1 ]; then
 
     jupyter serverextension nbextens_configurator enable --user
 fi
-#jupyter lab build
-jupyter lab build --dev-build=False --minimize=False
+jupyter lab build
 
 
 # ------------------------------------------------------------------------
