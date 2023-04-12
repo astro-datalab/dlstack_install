@@ -286,7 +286,7 @@ export PATH=$prefix/anaconda3/bin:$path:/bin:/usr/bin
 #anaconda3/bin/python get-pip.py
 
 # Update conda and install configs
-conda update -n base -c defaults -y conda
+#anaconda3/bin/conda update -n base -c defaults -y conda
 conda config --add channels conda-forge
 conda config --add channels astropy
 conda config --add channels glueviz
@@ -294,6 +294,7 @@ conda config --add channels plotly
 conda config --add channels anaconda
 conda config --add channels https://conda.anaconda.org/als832
 conda config --add channels https://conda.anaconda.org/pmuller
+anaconda3/bin/conda update -y conda
 
 
 # ============================================================================
@@ -317,8 +318,12 @@ echo "----------------------------------------------"
 # ===============
 #conda install -y --freeze-installed  uwsgi
 if [ $do_managers_only == 0 ]; then
-    conda install -y --freeze-installed  nodejs=12.4.0
-    conda install -y --freeze-installed  tensorflow openblas mysqlclient
+    conda install -y --freeze-installed nodejs=12.4.0
+    #conda install -y --freeze-installed  tensorflow openblas mysqlclient
+    pip install tensorflow
+    pip install openblas
+    pip install mysqlclient
+    #pip install mpi4py
     conda install -y --freeze-installed  mpi4py
 fi
 
@@ -337,7 +342,7 @@ pip install astropy-helpers
 pip install astropy-healpix
 pip install astroquery
 pip install astrocalc
-pip install healpy
+pip install healpy==1.16.1
 pip install httplib2
 pip install numpy
 pip install pathlib
@@ -370,19 +375,16 @@ if [ $do_managers_only == 0 ]; then
     pip install jupyterhub==1.4.2
     pip install jupyterlab==3.1.11
     pip install jupyter-nbextensions-configurator
-    pip install jupyter_contrib_nbextensions
     pip install jupyterhub-idle-culler
     pip install lmfit
     pip install matplotlib
     pip install mgefit
     pip install mpdaf
-    pip install nbconvert==6.4.4
-    pip install jinja2==3.0.3
     pip install nbresuse
     if [ $do_stable == 1 ]; then
         #pip install astro-datalab
         git clone http://github.com/astro-datalab/datalab.git
-        ( cd datalab ; python setup.py install )
+        ( cd datalab ; git checkout pytest ; python setup.py install )
 
         #pip install fits2db
         git clone http://github.com/astro-datalab/fits2db
@@ -396,6 +398,7 @@ if [ $do_managers_only == 0 ]; then
     pip install ppxf
     pip install photutils
     #pip install git+https://github.com/desihub/prospect.git@1.2.0
+    pip install pyMC3
     pip install pyopengl
     pip install pyzdcf
     pip install rebound
@@ -468,7 +471,7 @@ echo "----------------------------------------------"
 # Install the Data Lab client package and authenticator
 if [ $do_dev == 1 ]; then
     git clone http://github.com/astro-datalab/datalab.git
-    ( cd datalab ; python setup.py install )
+    ( cd datalab ; git checkout pytest ; python setup.py install )
 fi
 
 # Clone the Data Lab Authenticator
@@ -489,7 +492,7 @@ git clone https://github.com/fkiwy/unTimely_Catalog_explorer.git
 # ------------------------------------------------------------------------
 # Recent Anaconda packages require a re-install of jupyterhub ...
 #conda install -y jupyterhub
-pip install jupyterhub --force-reinstall
+#pip install jupyterhub --force-reinstall
 
 # ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
@@ -498,44 +501,33 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     echo " Installing JupyterLab packages ...."
     echo "----------------------------------------------"
 
-    #conda install -c conda-forge -y ipywidgets		# enabled automatically
-    pip install ipywidgets				# enabled automatically?
+    pip install ipywidgets==8
+    pip install jupyterlab-widgets
+    pip install widgetsnbextension
 
     jupyter labextension install @jupyterlab/hub-extension
 
-    #conda install -c plotly -y jupyterlab-dash
     pip install jupyterlab-dash
 
-    #jupyter labextension install @jupyterlab/toc
-    #jupyter labextension install jupyterlab-drawio
-    #jupyter labextension install @lckr/jupyterlab_variableinspector
-
-    #conda install -c conda-forge -y ipyleaflet
-    #conda install -c conda-forge -y ipytree
-    #conda install -c conda-forge -y ipyvolume
     pip install ipyleaflet
     pip install ipytree
     pip install ipyvolume
+    pip install nbclassic==0.2.8
 
-    #conda install -c conda-forge -y qgrid
     pip install qgrid
     jupyter labextension install qgrid
 
     pip install sidecar
     jupyter labextension install @jupyter-widgets/jupyterlab-sidecar
 
-    #jupyter labextension install @jupyterlab/xkcd-extension
-    #jupyter labextension install @jupyter-widgets/jupyterlab-manager
     #jupyter labextension install jupyterlab_bokeh	# wrong version
-
-#    jupyter labextension install @lckr/jupyterlab_variableinspector
     jupyter labextension install jupyter-threejs		# build fail
     jupyter labextension install jupyterlab-flake8
     jupyter labextension install ipyvolume			# build fail
 
-    #conda install -c wwt -y pywwt
     #pip install pywwt
 
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager
     jupyter serverextension nbextens_configurator enable --user
 fi
 jupyter lab build
@@ -566,7 +558,7 @@ if [ $do_dev == 1 ]; then
     mv datalab downloads
 fi
 #mv Anaconda*.sh *.gz gavo* get-pip.py dlauthenticator downloads
-mv Anaconda*.sh *.gz gavo* dlauthenticator unTimely* downloads
+mv Anaconda*.sh *.gz gavo* dlauthenticator unTimely* datalab fits2db prospect downloads
 conda clean -y -a
 
 # Create the local manifest file.
