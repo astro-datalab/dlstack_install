@@ -406,6 +406,7 @@ if [ $do_managers_only == 0 ]; then
     pip install speclite
     pip install specutils
     pip install termcolor
+    pip install tornado==6.2
     pip install virtualenv
     pip install vorbin
     pip install wget
