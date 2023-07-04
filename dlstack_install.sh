@@ -347,6 +347,7 @@ pip install httplib2
 pip install numpy
 pip install pathlib
 pip install psycopg2
+pip install psqlparse
 pip install pycurl-requests
 pip install pyvo
 pip install pandas
