@@ -403,7 +403,7 @@ if [ $do_managers_only == 0 ]; then
     pip install pyopengl
     pip install pyzdcf
     pip install rebound
-    pip install sparclclient==1.0.0
+    pip install sparclclient==1.2.0
     pip install speclite
     pip install specutils
     pip install termcolor
