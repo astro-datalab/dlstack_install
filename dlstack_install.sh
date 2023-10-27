@@ -298,7 +298,6 @@ anaconda3/bin/conda update -y conda
 
 
 # ============================================================================
-# pre-install any
 echo "" && echo ""
 echo -n "Start: "
 /bin/date
