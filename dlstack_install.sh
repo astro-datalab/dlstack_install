@@ -87,7 +87,7 @@ function verify_disk_structure {
 }
 
 function verify_active_version {
-  echo -n "Validating /data0/sw is $1 ... "
+  echo -n "Validating ${root_dir}/sw is $1 ... "
   diff -rq --no-dereference ${root_dir}"/sw/" ${1}/ &> /dev/null
   if [ $? == 0 ]; then
     echo "OK"
@@ -128,7 +128,7 @@ do_active=0
 do_kernels=0
 do_managers_only=0
 root_dir='/data0'
-kernel_dir='/data0/kernel-specs'
+kernel_dir="${root_dir}/kernel-specs"
 
 declare -a userargs skiplist
 while [ "$#" -gt 0 ]; do
@@ -176,24 +176,24 @@ if [ $do_active == 1 ]; then
   verify_active_version $aver
 
   if [ $_verbose == 1 ]; then
-    if [[ -L /data0/sw ]]; then
-        echo "    /data0/sw link -> "`readlink -f /data0/sw`
+    if [[ -L ${root_dir}/sw ]]; then
+        echo "    ${root_dir}/sw link -> "`readlink -f ${root_dir}/sw`
     else
-        echo "    /data0/sw is a directory"
+        echo "    ${root_dir}/sw is a directory"
     fi
 
-    if [[ -L /data0/sw.hdd ]]; then
-        echo "    /data0/sw.hdd link -> "`readlink -f /data0/sw.hdd`
+    if [[ -L ${root_dir}/sw.hdd ]]; then
+        echo "    ${root_dir}/sw.hdd link -> "`readlink -f ${root_dir}/sw.hdd`
     else
-        echo "    /data0/sw.hdd is a directory"
+        echo "    ${root_dir}/sw.hdd is a directory"
     fi
 
-    if [[ -L /data0/sw.tmpfs ]]; then
-        echo "    /data0/sw.tmpfs link -> "`readlink -f /data0/sw.tmpfs`
-    elif [[ -d /data0/sw.tmpfs ]]; then
-        echo "    /data0/sw.tmpfs is a directory"
+    if [[ -L ${root_dir}/sw.tmpfs ]]; then
+        echo "    ${root_dir}/sw.tmpfs link -> "`readlink -f ${root_dir}/sw.tmpfs`
+    elif [[ -d ${root_dir}/sw.tmpfs ]]; then
+        echo "    ${root_dir}/sw.tmpfs is a directory"
     else
-        echo "    /data0/sw.tmpfs is does not exist"
+        echo "    ${root_dir}/sw.tmpfs is does not exist"
     fi
   fi
   exit
