@@ -384,7 +384,7 @@ if [ $do_managers_only == 0 ]; then
     if [ $do_stable == 1 ]; then
         #pip install astro-datalab
         git clone http://github.com/astro-datalab/datalab.git
-        ( cd datalab ; git checkout master ; python setup.py install )
+        ( cd datalab ; git checkout fixing_99f72b ; python setup.py install )
 
         #pip install fits2db
         git clone http://github.com/astro-datalab/fits2db
