@@ -6,8 +6,11 @@
 export SHELL=/bin/bash
 
 
-ver="2020.07"					# Anaconda version to install
-ver="2021.05"					# Anaconda version to install
+#ver="2020.07"				# Anaconda version to install
+#ver="2021.05"				# Anaconda version to install
+ver="2022.05"				# Anaconda version to install
+ver="2023.03-1"				# Anaconda version to install (Py3.10.9)
+
 base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
 # ===========================================================================
@@ -125,6 +128,7 @@ do_clean=0
 do_stable=1
 do_active=0
 do_kernels=0
+do_managers_only=0
 root_dir='/data0'
 kernel_dir='/data0/kernel-specs'
 
@@ -137,6 +141,7 @@ while [ "$#" -gt 0 ]; do
         -d|--dev) export do_dev=1;export do_stable=0;;
         -e|--extensions) export do_jupyterlab_extensions=1;;
         -k|--kernels) export do_kernels=1;;
+        -m|--managers) export do_managers_only=1;;
         -s|--stable) export do_stable=1;export do_dev=0;;
         -K|--kernel-dir) shift;kernel_dir=$1;;
         -R|--root-dir) shift;root_dir=$1;;
@@ -251,7 +256,8 @@ fi
 if [ $do_clean == 1 ]; then
     echo "# ------------------------------------"
     echo -n "Cleaning old install ..... "
-    /bin/rm -rf ./anaconda3 ./downloads ./get-pip.py ./MANIFEST
+    #/bin/rm -rf ./anaconda3 ./downloads ./get-pip.py ./MANIFEST
+    /bin/rm -rf ./anaconda3 ./downloads ./MANIFEST
     echo "Done"
     echo "# ------------------------------------"
 fi
@@ -277,9 +283,9 @@ export PWD=$prefix && sh $fname -b -u -p $prefix/anaconda3
 # Set the PATH to pick up the new conda install directory.
 export PATH=$prefix/anaconda3/bin:$path:/bin:/usr/bin
 
-# Download the PIP installer.
-curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-anaconda3/bin/python get-pip.py
+# Download the latest PIP installer.
+#curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+#anaconda3/bin/python get-pip.py
 
 # Update conda and install configs
 conda update -n base -c defaults -y conda
@@ -288,8 +294,8 @@ conda config --add channels astropy
 conda config --add channels glueviz
 conda config --add channels plotly
 conda config --add channels anaconda
-conda config --add channels https://conda.anaconda.org/als832
-conda config --add channels https://conda.anaconda.org/pmuller
+#conda config --add channels https://conda.anaconda.org/als832
+#conda config --add channels https://conda.anaconda.org/pmuller
 
 
 # ============================================================================
@@ -300,7 +306,7 @@ echo -n "Start: "
 echo ""
 
 # ===================
-# Anaconda Python 3.7
+# Anaconda Python 3.8
 # ===================
 
 echo ""
@@ -311,9 +317,15 @@ echo "----------------------------------------------"
 # ===============
 # Conda Installs
 # ===============
-#conda install -y uwsgi jupyterhub nodejs PyQt5 tensorflow openblas mysqlclient
-conda install -y uwsgi nodejs PyQt5 tensorflow openblas mysqlclient
-conda install -y mpi4py
+#conda install -y --freeze-installed  uwsgi
+if [ $do_managers_only == 0 ]; then
+    #conda install -y --freeze-installed  nodejs=12.4.0
+    #conda install -y --freeze-installed  tensorflow openblas mysqlclient
+    #conda install -y --freeze-installed  mpi4py
+    conda install -y nodejs=18.12.1	# version needed for jupyter lab build
+    conda install -y tensorflow openblas mysqlclient
+    conda install -y mpi4py
+fi
 
 
 # ===============
@@ -321,61 +333,97 @@ conda install -y mpi4py
 # ===============
 pip install --upgrade pip
 
-pip install astrocalc
-pip install astor
-pip install astroml
-pip install astroplan
+pip install flask
+pip install flask_cors
+
+#pip install "antares-client==1.2.0"
+pip install antares-client
 pip install astropy
 pip install astropy-helpers
 pip install astropy-healpix
 pip install astroquery
-pip install autopep8
-pip install batman-package
-pip install docker-py
-pip install emcee
-pip install fitsio
-pip install future
-pip install gatspy
-pip install ginga
-pip install "glueviz==0.14"
-pip install h5py==2.10.0
+pip install astrocalc
+pip install bokeh
 pip install healpy
 pip install httplib2
-pip install ipympl
-pip install jampy
-pip install jupyterhub==1.4.2
-pip install jupyterlab>=3.1.9
-pip install lmfit
-pip install matplotlib
-pip install mgefit
-pip install mpdaf
-pip install nbresuse
-if [ $do_stable == 1 ]; then
-    pip install noaodatalab
-else
-    pip install git+https://github.com/noaodatalab/datalab
-fi
+pip install jdaviz
+#pip install numpy==0.57.1
 pip install numpy
-pip install pafit
-pip install pandas
-pip install passlib
-pip install ppxf
-pip install psycopg2
 pip install pathlib
-pip install photutils
-pip install git+https://github.com/desihub/prospect.git@1.2.0
+pip install psycopg2-binary
 pip install pycurl-requests
-pip install pyopengl
 pip install pyvo
+pip install pandas
 pip install rebound
-pip install redis==2.10.6
+pip install redis
+pip install Shapely==1.8.1.post1
+pip install seaborn
 pip install simplejson
-pip install speclite
-pip install specutils
-pip install termcolor
-pip install virtualenv
-pip install vorbin
-pip install wget
+
+if [ $do_managers_only == 0 ]; then
+    pip install astor
+    pip install astroml
+    pip install astroplan
+    pip install autopep8
+    pip install batman-package
+    pip install docker-py
+    pip install emcee
+    pip install "fitsio==1.1.5"
+    pip install future
+    pip install gatspy
+    pip install ginga
+    #pip install "glueviz==0.14"
+    pip install glueviz
+    pip install h5py==3.9.0
+    pip install ipympl
+    pip install ipython==7.12.0
+    pip install jampy
+    #pip install jupyterhub==1.4.2
+    #pip install jupyterlab==3.1.11
+    pip install jupyterhub
+    pip install jupyterlab
+    pip install jupyter-nbextensions-configurator
+    pip install jupyter_contrib_nbextensions
+    pip install jupyterhub-idle-culler
+    pip install lmfit
+    pip install matplotlib
+    pip install mgefit
+    pip install mpdaf
+    pip install nbconvert==6.4.4
+    pip install jinja2==3.0.3
+    pip install nbresuse
+    if [ $do_stable == 1 ]; then
+        #pip install astro-datalab
+        git clone http://github.com/astro-datalab/datalab.git
+        ( cd datalab ; pip install .)
+
+        git clone http://github.com/astro-datalab/fits2db
+        ( cd fits2db ; pip install .)
+    else
+        pip install git+https://github.com/astro-datalab/datalab
+        pip install git+https://github.com/astro-datalab/fits2db
+    fi
+    pip install pafit
+    pip install passlib
+    pip install ppxf
+    pip install photutils
+    #pip install git+https://github.com/desihub/prospect.git@1.2.0
+    pip install pyopengl
+    pip install pyzdcf
+    pip install rebound
+    pip install sparclclient==1.2.0
+    pip install speclite
+    pip install specutils
+    pip install termcolor
+    pip install virtualenv
+    pip install vorbin
+    pip install wget
+
+    pip uninstall --force spyder            # for dependency resolution below
+    pip uninstall --force pyqt5 pyqtwebengine
+    pip install spyder
+    pip install pyqt5 pyqtwebengine
+fi
 
 
 # Obsolete packages, included here for documentation only
@@ -386,7 +434,7 @@ pip install wget
 #pip install fitsio			# Not Py3 compatible
 
 
-if [ do_astrometry_dot_net == 1 ]; then
+if [ $do_astrometry_dot_net == 1 ]; then
     echo "----------------------------------------------"
     echo " Installing astrometry.net packages ...."
     echo "----------------------------------------------"
@@ -417,9 +465,9 @@ if [ $do_gavo == 1 ]; then
       sed -e "${s},${e}d" -e "97ifrom urllib2 import HTTPSHandler" > /tmp/os.$$
     mv /tmp/os.$$ gavoutils-${gavo_ver}/gavo/utils/ostricks.py
 
-    (cd gavoutils-$gavo_ver  ; python setup.py install)
-    (cd gavovot-$gavo_ver    ; python setup.py install)
-    (cd gavostc-$gavo_ver    ; python setup.py install)
+    (cd gavoutils-$gavo_ver  ; pip install .)
+    (cd gavovot-$gavo_ver    ; pip install .)
+    (cd gavostc-$gavo_ver    ; pip install .)
 fi
 
 
@@ -430,20 +478,33 @@ echo " Downloading external packages ...."
 echo "----------------------------------------------"
 
 # Install the Data Lab client package and authenticator
-if [ $do_dev == 1 ]; then
-    git clone http://github.com/noaodatalab/datalab.git
-    ( cd datalab ; python setup.py install )
-fi
+#
+# NB: installed above
+#
+#if [ $do_dev == 1 ]; then
+#    git clone http://github.com/astro-datalab/datalab.git
+#    ( cd datalab ; pip install .)
+#fi
 
 # Clone the Data Lab Authenticator
-git clone https://github.com/noaodatalab/dlauthenticator
-( cd dlauthenticator ; python setup.py install )
+git clone https://github.com/astro-datalab/dlauthenticator
+( cd dlauthenticator ; pip install .)
+
+# Install the PROSPECT viewer
+git clone -q https://github.com/desihub/prospect.git
+( cd prospect ; \
+    git checkout -q 87479dbcdf1ed4720fb6eeb74eba571432fabe41 ; \
+    pip install .)
+
+# Install the unTimely Catalog explorer viewer
+git clone https://github.com/fkiwy/unTimely_Catalog_explorer.git
+(cd unTimely_Catalog_explorer ; pip install .)
 
 
 # ------------------------------------------------------------------------
 # Recent Anaconda packages require a re-install of jupyterhub ...
-conda install -y jupyterhub
-#pip install jupyterhub --force-reinstall
+#conda install -y jupyterhub
+pip install jupyterhub --force-reinstall
 
 # ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
@@ -454,11 +515,14 @@ if [ $do_jupyterlab_extensions == 1 ]; then
 
     #conda install -c conda-forge -y ipywidgets		# enabled automatically
     pip install ipywidgets				# enabled automatically?
+    pip install jupyterlab-execute-time==2.3.1
 
-    jupyter labextension install @jupyterlab/hub-extension
+    jupyter nbextension enable --py widgetsnbextension
+
+    #jupyter labextension install @jupyterlab/hub-extension
 
     #conda install -c plotly -y jupyterlab-dash
-    pip install jupyterlab-dash
+    #pip install jupyterlab-dash
 
     #jupyter labextension install @jupyterlab/toc
     #jupyter labextension install jupyterlab-drawio
@@ -472,26 +536,41 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     pip install ipyvolume
 
     #conda install -c conda-forge -y qgrid
-    pip install qgrid
-    jupyter labextension install qgrid
+    #pip install qgrid
+    #jupyter labextension install qgrid
 
-    pip install sidecar
-    jupyter labextension install @jupyter-widgets/jupyterlab-sidecar
+    #pip install sidecar
+    #jupyter labextension install @jupyter-widgets/jupyterlab-sidecar
 
     #jupyter labextension install @jupyterlab/xkcd-extension
     #jupyter labextension install @jupyter-widgets/jupyterlab-manager
     #jupyter labextension install jupyterlab_bokeh	# wrong version
 
 #    jupyter labextension install @lckr/jupyterlab_variableinspector
-    jupyter labextension install jupyter-threejs		# build fail
-    jupyter labextension install jupyterlab-flake8
-    jupyter labextension install ipyvolume			# build fail
-
+    #jupyter labextension install jupyter-threejs		# build fail
+    #jupyter labextension install jupyterlab-flake8
+    #jupyter labextension install ipyvolume			# build fail
 
     #conda install -c wwt -y pywwt
-    pip install pywwt
+    #pip install pywwt
+
+    #jupyter serverextension nbextens_configurator enable --user
 fi
+
+
+# Fix bug in JDAVIZ 3.7.1 use of VUE package caused by missing de-indent
+# module.
 jupyter lab build
+(cd /data0/sw/anaconda3/share/jupyter/lab/staging/node_modules/@mariobuikhuizen/vue-compiler-addon/dist ; cat vue-compiler-addon.esm.js | sed -e "4791d" | egrep -v deindent > _tmp ; mv _tmp vue-compiler-addon.esm.js)
+
+# Final build
+jupyter lab build
+
+
+
+# ------------------------------------------------------------------------
+# Create an alternate Python 3.11 environment
+conda create -n py3.11 -y python=3.11
 
 
 # ------------------------------------------------------------------------
@@ -518,7 +597,8 @@ fi
 if [ $do_dev == 1 ]; then
     mv datalab downloads
 fi
-mv Anaconda*.sh *.gz gavo* get-pip.py dlauthenticator downloads
+mv Anaconda*.sh *.gz datalab dlauthenticator downloads
+mv unTimely* gavo* fits2db prospect downloads
 conda clean -y -a
 
 # Create the local manifest file.
