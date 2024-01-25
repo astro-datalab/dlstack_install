@@ -6,10 +6,11 @@
 export SHELL=/bin/bash
 
 
-#ver="2020.07"				# Anaconda version to install
-#ver="2021.05"				# Anaconda version to install
-ver="2022.05"				# Anaconda version to install
-ver="2023.03-1"				# Anaconda version to install (Py3.10.9)
+#ver="2020.07"			# Anaconda version to install
+#ver="2021.05"			# Anaconda version to install
+ver="2022.05"			# Anaconda version to install
+ver="2023.03-1"			# Anaconda version to install (Py3.10.13)
+ver="2023.09-0"			# Anaconda version to install (Py3.11.5)
 
 base_url="https://repo.anaconda.com/archive/"	# Anaconda download repo
 
@@ -305,9 +306,9 @@ echo -n "Start: "
 /bin/date
 echo ""
 
-# ===================
-# Anaconda Python 3.8
-# ===================
+# ====================
+# Anaconda Python 3.10
+# ====================
 
 echo ""
 echo "----------------------------------------------"
@@ -322,9 +323,10 @@ if [ $do_managers_only == 0 ]; then
     #conda install -y --freeze-installed  nodejs=12.4.0
     #conda install -y --freeze-installed  tensorflow openblas mysqlclient
     #conda install -y --freeze-installed  mpi4py
-    conda install -y nodejs=18.12.1	# version needed for jupyter lab build
-    conda install -y tensorflow openblas mysqlclient
-    conda install -y mpi4py
+#    conda install -y nodejs=18.12.1	# version needed for jupyter lab build
+#    conda install -y tensorflow openblas mysqlclient
+#    conda install -y mpi4py
+conda list | grep mamba
 fi
 
 
@@ -335,6 +337,10 @@ pip install --upgrade pip
 
 pip install flask
 pip install flask_cors
+
+pip install nodejs==18.12.1	# version needed for jupyter lab build
+pip install tensorflow openblas mysqlclient
+pip install mpi4py
 
 #pip install "antares-client==1.2.0"
 pip install antares-client
@@ -374,9 +380,11 @@ if [ $do_managers_only == 0 ]; then
     pip install ginga
     #pip install "glueviz==0.14"
     pip install glueviz
-    pip install h5py==3.9.0
+    #pip install h5py==3.9.0
+    pip install h5py
     pip install ipympl
-    pip install ipython==7.12.0
+    #pip install ipython==7.12.0
+    pip install ipython
     pip install jampy
     #pip install jupyterhub==1.4.2
     #pip install jupyterlab==3.1.11
@@ -389,8 +397,9 @@ if [ $do_managers_only == 0 ]; then
     pip install matplotlib
     pip install mgefit
     pip install mpdaf
-    pip install nbconvert==6.4.4
-    pip install jinja2==3.0.3
+    pip install nbconvert==7.3.1
+    #pip install jinja2==3.0.3
+    pip install jinja2
     pip install nbresuse
     if [ $do_stable == 1 ]; then
         #pip install astro-datalab
@@ -407,6 +416,7 @@ if [ $do_managers_only == 0 ]; then
     pip install passlib
     pip install ppxf
     pip install photutils
+    pip install plotly
     #pip install git+https://github.com/desihub/prospect.git@1.2.0
     pip install pyopengl
     pip install pyzdcf
@@ -488,7 +498,7 @@ echo "----------------------------------------------"
 
 # Clone the Data Lab Authenticator
 git clone https://github.com/astro-datalab/dlauthenticator
-( cd dlauthenticator ; pip install .)
+( cd dlauthenticator ; git checkout gp02_forward; pip install .)
 
 # Install the PROSPECT viewer
 git clone -q https://github.com/desihub/prospect.git
@@ -501,10 +511,14 @@ git clone https://github.com/fkiwy/unTimely_Catalog_explorer.git
 (cd unTimely_Catalog_explorer ; pip install .)
 
 
+# Install the http proxy.
+npm install -g configurable-http-proxy
+
+
 # ------------------------------------------------------------------------
 # Recent Anaconda packages require a re-install of jupyterhub ...
 #conda install -y jupyterhub
-pip install jupyterhub --force-reinstall
+#pip install jupyterhub --force-reinstall
 
 # ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
@@ -514,10 +528,13 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     echo "----------------------------------------------"
 
     #conda install -c conda-forge -y ipywidgets		# enabled automatically
-    pip install ipywidgets				# enabled automatically?
+#   conda install -c conda-forge -y jupyter_nbextensions_configurator
+#   pip install jupyter-nbextensions-configurator
+
+    pip install ipywidgets
     pip install jupyterlab-execute-time==2.3.1
 
-    jupyter nbextension enable --py widgetsnbextension
+#   jupyter nbextension enable --py widgetsnbextension
 
     #jupyter labextension install @jupyterlab/hub-extension
 
@@ -542,11 +559,10 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     #pip install sidecar
     #jupyter labextension install @jupyter-widgets/jupyterlab-sidecar
 
-    #jupyter labextension install @jupyterlab/xkcd-extension
     #jupyter labextension install @jupyter-widgets/jupyterlab-manager
     #jupyter labextension install jupyterlab_bokeh	# wrong version
 
-#    jupyter labextension install @lckr/jupyterlab_variableinspector
+    #jupyter labextension install @lckr/jupyterlab_variableinspector
     #jupyter labextension install jupyter-threejs		# build fail
     #jupyter labextension install jupyterlab-flake8
     #jupyter labextension install ipyvolume			# build fail
@@ -570,7 +586,7 @@ jupyter lab build
 
 # ------------------------------------------------------------------------
 # Create an alternate Python 3.11 environment
-conda create -n py3.11 -y python=3.11
+#conda create -n py3.11 -y python=3.11
 
 
 # ------------------------------------------------------------------------
