@@ -200,18 +200,28 @@ install_packages_from_file() {
                     # Create a temporary directory
                     local temp_dir=$(mktemp -d)
                     log_verbose "Created temporary directory $temp_dir for cloning"
-                    # Extract repository URL by removing the 'git+' prefix
-                    local repo_url="${line#git+}"
-                    # Extract the last part of the URL as the repository name
-                    local repo_name=$(basename "$repo_url" .git)
-                    # Clone the repository into the temporary directory
-                    git clone "$repo_url" "$temp_dir/$repo_name"
+                    # Extract repository URL and optional branch from the line
+                    # Format: git+https://github.com/user/repo.git@branch
+                    local repo_url_with_optional_branch="${line#git+}"
+                    local branch_name=""
+                    if [[ "$repo_url_with_optional_branch" == *@* ]]; then
+                        # Extract the branch name if specified
+                        branch_name="${repo_url_with_optional_branch##*@}"
+                        # Remove the branch name from the URL
+                        repo_url_with_optional_branch="${repo_url_with_optional_branch%@*}"
+                    fi
+                    # Clone the repository into the temporary directory, specifying the branch if present
+                    if [ -n "$branch_name" ]; then
+                        git clone -b "$branch_name" "$repo_url_with_optional_branch" "$temp_dir"
+                    else
+                        git clone "$repo_url_with_optional_branch" "$temp_dir"
+                    fi
                     # Install from the cloned local repository
-                    (cd "$temp_dir/$repo_name" && $pip_path install .)
-                    # Optionally, remove the temporary directory if you want to clean up immediately
+                    $pip_path install "$temp_dir"
+                    # Clean up the temporary directory
                     rm -rf "$temp_dir"
                 else
-                    # Directly install using pip
+                    # Directly install using pip, supports URLs with branches
                     $pip_path install "$line"
                 fi
             else
