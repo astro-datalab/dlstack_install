@@ -137,22 +137,37 @@ activate_conda_env() {
 
 create_conda_env() {
     log_verbose "Updating conda"
-    conda update -y conda
-    conda install -y pip
+
+    if [ "$_dry_run" -eq 0 ]; then
+        conda update -y conda
+        conda install -y pip
+    fi
 
     local conda_env_target=$(get_conda_env_target)
 
     # Check if we are using a name or directory for the environment
     if [[ "$conda_env_target" == *"/"* ]]; then
         # It's a directory; ensure it exists
-        mkdir -p "$conda_env_target"
-        conda create python=${python_env_version} --prefix="$conda_env_target" -y
+        if [ "$_dry_run" -eq 0 ]; then
+            mkdir -p "$conda_env_target"
+            conda create python=${python_env_version} --prefix="$conda_env_target" -y
+        else
+            echo "dry-run: conda create python=${python_env_version} --prefix=\"$conda_env_target\" -y"
+        fi
     else
         # It's a name
-        conda create python=${python_env_version} --name "$conda_env_target" -y
+        if [ "$_dry_run" -eq 0 ]; then
+            conda create python=${python_env_version} --name "$conda_env_target" -y
+        else
+            echo "dry-run: conda create python=${python_env_version} --name \"$conda_env_target\" -y"
+        fi
     fi
 
-    activate_conda_env "$conda_env_target"
+    if [ "$_dry_run" -eq 0 ]; then
+        activate_conda_env "$conda_env_target"
+    else
+        echo "dry-run: activate_conda_env \"$conda_env_target\""
+    fi
 
     log_verbose "New Conda environment created: $conda_env_target"
 }
@@ -353,7 +368,12 @@ main() {
     fi
     # if which python error then install conda?
     if [ "$do_install_anaconda" == 1 ]; then
-        install_anaconda
+       if [ "$_dry_run" -eq 0 ]; then
+           log_verbose "Install anaconda"
+           install_anaconda
+       else
+           log_verbose "dry-run: Install anaconda"
+       fi
     fi
 
     # export whatever conda and python env we have
@@ -385,8 +405,12 @@ main() {
         local filename_base="managers_requirement_py" # Example base filename
         local packages_file
         packages_file=$(construct_filename_with_python_version "$filename_base")".txt"
-        log_verbose "install_packages_from_file \"$packages_file\""
-        install_packages_from_file "$packages_file"
+        if [ "$_dry_run" -eq 0 ]; then
+            log_verbose "install_packages_from_file \"$packages_file\""
+            install_packages_from_file "$packages_file"
+        else
+            log_verbose "dry-run: install_packages_from_file \"$packages_file\""
+        fi
     fi
 
     if [ "$do_jhubserver" == "1" ]; then
@@ -414,8 +438,12 @@ main() {
 
     # gavo will always install when building a kernel or the managers
     if [[ "$do_gavo" == "1" ]] && { [[ "$do_buildkernel" == "1" ]] || [[ "$do_managers_only" == "1" ]]; }; then
-       log_verbose "Install gavo"
-       install_gavo
+       if [ "$_dry_run" -eq 0 ]; then
+           log_verbose "Install gavo"
+           install_gavo
+       else
+           log_verbose "dry-run: Install gavo"
+       fi
     fi
 }
 
@@ -479,10 +507,10 @@ while [ "$#" -gt 0 ]; do
         -s|--stable) export do_stable=1;export do_dev=0;;
         -R|--root-dir) shift;root_dir=$1;;
         -r|--create-env) export do_create_env=1;;
-        -n|--env-name) shift; env_name=1;;
+        -n|--env-name) shift; env_name=$1;;
         -p|--env-prefix) shift; env_prefix=$1;;
         -v|--py-version) shift;python_env_version=$1;;
-        --dryrun) _dry_run=1;;
+        --dryrun|--dry-run) _dry_run=1;;
         --debug) _debug=1;;
         --verbose) _verbose=1;;
         *) userargs=("${userargs[@]}" "${1}");;
