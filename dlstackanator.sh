@@ -41,7 +41,7 @@ usage() {
   echo "   [-p|--env-prefix <dir>] Set the environment prefix directory."
   echo "                           Note: --env-name and --env-prefix are mutually exclusive"
   echo "                                 If both are passed --env-name has priority"
-  echo "   [--pyver <ver>]         Set Python environment version. E.g., 3.10."
+  echo "   [-v|--py-version <ver>] Set Python environment version. E.g., 3.10."
   echo "   [--dryrun]              Enable dry run mode (no changes made)."
   echo "   [--debug]               Enable debug output."
   echo "   [--verbose]             Enable verbose output."
@@ -481,7 +481,7 @@ while [ "$#" -gt 0 ]; do
         -r|--create-env) export do_create_env=1;;
         -n|--env-name) shift; env_name=1;;
         -p|--env-prefix) shift; env_prefix=$1;;
-        --pyver) shift;python_env_version=$1;;
+        -v|--py-version) shift;python_env_version=$1;;
         --dryrun) _dry_run=1;;
         --debug) _debug=1;;
         --verbose) _verbose=1;;
