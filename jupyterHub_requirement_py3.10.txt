@@ -1,0 +1,11 @@
+jupyterhub
+jupyterlab
+jupyterhub-idle-culler
+jupyter-nbextensions-configurator
+jupyter_contrib_nbextensions
+nodejs
+flask
+flask_cors
+jinja2
+passlib
+oauthenticator
