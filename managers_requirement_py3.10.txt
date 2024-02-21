@@ -5,7 +5,8 @@ astropy-helpers
 astroquery
 bokeh
 lxml
-git+https://github.com/astro-datalab/datalab.git@master#egg=astro_datalab
+git+https://github.com/astro-datalab/fits2db.fit@master
+git+https://github.com/astro-datalab/datalab.git@master
 Flask
 healpy
 httplib2
