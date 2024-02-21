@@ -37,9 +37,11 @@ usage() {
   echo "   [-s|--stable]           Use the stable 'datalab' release (default: True)."
   echo "   [-R|--root-dir <dir>]   Set root dir (default: /data0)."
   echo "   [-r|--create-env]       Create a new Conda environment."
-  echo "   [--env-prefix <dir>]    Set the environment prefix directory."
-  echo "   [--cbase <dir>]         Set the Conda base path."
-  echo "   [--pyenv <ver>]         Set Python environment version. E.g., 3.10."
+  echo "   [-n|--env-name <name>]  Set the conda environment name.(Optional) Defaults to \"py_<python_ver>\""
+  echo "   [-p|--env-prefix <dir>] Set the environment prefix directory."
+  echo "                           Note: --env-name and --env-prefix are mutually exclusive"
+  echo "                                 If both are passed --env-name has priority"
+  echo "   [--pyver <ver>]         Set Python environment version. E.g., 3.10."
   echo "   [--dryrun]              Enable dry run mode (no changes made)."
   echo "   [--debug]               Enable debug output."
   echo "   [--verbose]             Enable verbose output."
@@ -116,34 +118,43 @@ is_valid_conda_env() {
     fi
 }
 
+get_conda_env_target() {
+    if [[ -n "$env_name" ]]; then
+        echo "$env_name"
+    else
+        if [ -z "$env_prefix" ]; then
+            env_prefix="$(conda info --base)/envs"
+        fi
+        echo "$env_prefix/py_${python_env_version}"
+    fi
+}
+
+activate_conda_env() {
+    local conda_env_target=$1
+    log_verbose "Activating Conda environment: $conda_env_target"
+    source activate "$conda_env_target"
+}
+
 create_conda_env() {
     log_verbose "Updating conda"
     conda update -y conda
     conda install -y pip
 
-    # Use a default prefix if env_prefix is not provided
-    if [ -z "$env_prefix" ]; then
-        # Default to the standard Conda envs directory if env_prefix is not specified
-        env_prefix="$(conda info --base)/envs"
-        log_verbose "env_prefix is not set, using default: $env_prefix"
+    local conda_env_target=$(get_conda_env_target)
+
+    # Check if we are using a name or directory for the environment
+    if [[ "$conda_env_target" == *"/"* ]]; then
+        # It's a directory; ensure it exists
+        mkdir -p "$conda_env_target"
+        conda create python=${python_env_version} --prefix="$conda_env_target" -y
+    else
+        # It's a name
+        conda create python=${python_env_version} --name "$conda_env_target" -y
     fi
 
-    conda_env_dir="$env_prefix/py_${python_env_version}"
+    activate_conda_env "$conda_env_target"
 
-    # Ensure the directory exists
-    if [ ! -d "$conda_env_dir" ]; then
-        mkdir -p "$conda_env_dir"
-    fi
-
-    log_verbose "##** Create Python ${python_env_version} environment"
-    log_verbose "conda create python=${python_env_version} --prefix=${conda_env_dir} -y"
-    conda create python=${python_env_version} --prefix=${conda_env_dir} -y
-
-    log_verbose "source activate \"$conda_env_dir\""
-    source activate "$conda_env_dir"
-
-    # Log the environment location after creation
-    log_verbose "New conda environment created at: $conda_env_dir"
+    log_verbose "New Conda environment created: $conda_env_target"
 }
 
 # Generalized function to construct a filename with the Python version appended
@@ -441,6 +452,7 @@ do_managers_only=0
 
 # Miscellaneous options
 env_prefix=""
+env_name=""
 python_env_version=""
 version=''
 _dry_run=0
@@ -467,9 +479,9 @@ while [ "$#" -gt 0 ]; do
         -s|--stable) export do_stable=1;export do_dev=0;;
         -R|--root-dir) shift;root_dir=$1;;
         -r|--create-env) export do_create_env=1;;
-        --env-prefix) shift; env_prefix=$1;;
-        --cbase) shift;conda_base_path=$1;;
-        --pyenv) shift;python_env_version=$1;;
+        -n|--env-name) shift; env_name=1;;
+        -p|--env-prefix) shift; env_prefix=$1;;
+        --pyver) shift;python_env_version=$1;;
         --dryrun) _dry_run=1;;
         --debug) _debug=1;;
         --verbose) _verbose=1;;
