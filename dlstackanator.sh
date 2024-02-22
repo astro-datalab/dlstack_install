@@ -195,7 +195,10 @@ install_packages_from_file() {
 
     while IFS= read -r line || [[ -n "$line" ]]; do
         # Skip comments and empty lines
-        [[ "$line" == \#* ]] || [[ -z "$line" ]] && continue
+        line=$(echo "$line" | sed 's/#.*//' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+        # Skip empty lines
+        [[ -z "$line" ]] && continue
 
         log_verbose "Processing line: $line"
 
