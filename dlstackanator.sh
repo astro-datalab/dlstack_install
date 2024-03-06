@@ -42,6 +42,7 @@ usage() {
   echo "                           Note: --env-name and --env-prefix are mutually exclusive"
   echo "                                 If both are passed --env-name has priority"
   echo "   [-v|--py-version <ver>] Set Python environment version. E.g., 3.10."
+  echo "   [--channels]            Install conda channels."
   echo "   [--dryrun]              Enable dry run mode (no changes made)."
   echo "   [--debug]               Enable debug output."
   echo "   [--verbose]             Enable verbose output."
@@ -65,6 +66,17 @@ cleanup_old_anaconda_install() {
     fi
     log_verbose "Done"
     log_verbose "# ------------------------------------"
+}
+
+# Function to configure Conda channels
+configure_conda_channels() {
+    log_verbose "Configuring Conda channels..."
+    conda update -n base -c defaults -y conda
+    conda config --add channels conda-forge
+    conda config --add channels astropy
+    conda config --add channels glueviz
+    conda config --add channels plotly
+    conda config --add channels anaconda
 }
 
 # Anaconda installation function
@@ -91,13 +103,8 @@ install_anaconda() {
 
         export PATH="$prefix/anaconda3/bin:$PATH"
 
-        # Update conda and install configs
-        conda update -n base -c defaults -y conda
-        conda config --add channels conda-forge
-        conda config --add channels astropy
-        conda config --add channels glueviz
-        conda config --add channels plotly
-        conda config --add channels anaconda
+        # Call the function to configure Conda channels
+        configure_conda_channels
     else
         log_verbose "Skipping download and installation in dry run mode."
     fi
@@ -165,6 +172,9 @@ create_conda_env() {
 
     if [ "$_dry_run" -eq 0 ]; then
         activate_conda_env "$conda_env_target"
+        if [ "$do_conda_channels" -eq "1" ]; then
+            configure_conda_channels
+        fi
     else
         echo "dry-run: activate_conda_env \"$conda_env_target\""
     fi
@@ -470,6 +480,7 @@ conda_base_path="${root_dir}/sw/anaconda3"
 do_gavo=1        # gavo always on
 do_dev=0
 do_install_anaconda=0
+do_conda_channels=0
 do_create_env=0
 do_clean=0
 do_buildkernel=0
@@ -513,6 +524,7 @@ while [ "$#" -gt 0 ]; do
         -n|--env-name) shift; env_name=$1;;
         -p|--env-prefix) shift; env_prefix=$1;;
         -v|--py-version) shift;python_env_version=$1;;
+        --channels) do_conda_channels=1;;
         --dryrun|--dry-run) _dry_run=1;;
         --debug) _debug=1;;
         --verbose) _verbose=1;;
