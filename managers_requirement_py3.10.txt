@@ -8,6 +8,7 @@ lxml
 git+https://github.com/astro-datalab/fits2db.git@master
 git+https://github.com/astro-datalab/datalab.git@master
 Flask
+flask_cors
 healpy
 httplib2
 numpy>=1.21.0,<=1.23.5 #needed by gavo packages
@@ -24,3 +25,4 @@ redis
 seaborn
 simplejson
 pyOpenSSL  # needed by gavo
+conda+uwsgi
