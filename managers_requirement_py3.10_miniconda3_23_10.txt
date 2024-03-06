@@ -1,0 +1,26 @@
+astrocalc
+conda+astropy
+conda+astropy-healpix
+conda+astropy-helpers
+conda+astroquery
+bokeh
+lxml
+git+https://github.com/astro-datalab/fits2db.git@master
+git+https://github.com/astro-datalab/datalab.git@master
+conda+Flask
+conda+healpy
+conda+httplib2
+conda+numpy>=1.21.0,<=1.23.5
+conda+pandas
+conda+passlib
+conda+pathlib
+conda+psycopg2-binary
+conda+pycurl
+pycurl-requests
+requests
+setuptools
+pyvo
+redis
+seaborn
+conda+simplejson
+conda+pyOpenSSL  # needed by gavo
