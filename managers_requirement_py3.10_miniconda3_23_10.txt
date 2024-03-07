@@ -8,6 +8,7 @@ lxml
 git+https://github.com/astro-datalab/fits2db.git@master
 git+https://github.com/astro-datalab/datalab.git@master
 conda+Flask
+conda+flask_cors
 conda+healpy
 conda+httplib2
 conda+numpy>=1.21.0,<=1.23.5
@@ -22,5 +23,7 @@ setuptools
 pyvo
 redis
 seaborn
+conda+mysql-connector-python
 conda+simplejson
 conda+pyOpenSSL  # needed by gavo
+conda+uwsgi

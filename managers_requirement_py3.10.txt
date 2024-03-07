@@ -25,4 +25,5 @@ redis
 seaborn
 simplejson
 pyOpenSSL  # needed by gavo
+mysql-connector-python
 conda+uwsgi
