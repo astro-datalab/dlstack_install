@@ -422,7 +422,7 @@ if [ $do_managers_only == 0 ]; then
     #pip install git+https://github.com/desihub/prospect.git@1.2.0
     pip install pyopengl
     pip install pyzdcf
-    pip install rebound
+    pip install rebound==3.24.3
     pip install sparclclient==1.2.1
     pip install speclite
     pip install specutils
