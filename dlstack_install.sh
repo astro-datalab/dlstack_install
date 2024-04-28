@@ -356,6 +356,7 @@ pip install healpy
 pip install httplib2
 pip install jdaviz
 #pip install numpy==0.57.1
+pip install numba
 pip install numpy
 pip install pathlib
 pip install psycopg2-binary
