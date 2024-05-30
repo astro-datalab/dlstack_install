@@ -355,6 +355,7 @@ pip install bokeh
 pip install healpy
 pip install httplib2
 pip install jdaviz
+pip install jupyterlab_execute_time
 #pip install numpy==0.57.1
 pip install numba
 pip install numpy
@@ -509,10 +510,10 @@ git clone https://github.com/astro-datalab/dlauthenticator
 ( cd dlauthenticator ; git checkout gp02_forward; pip install .)
 
 # Install the PROSPECT viewer
-git clone -q https://github.com/desihub/prospect.git
-( cd prospect ; \
-    git checkout -q 87479dbcdf1ed4720fb6eeb74eba571432fabe41 ; \
-    pip install .)
+#git clone -q https://github.com/desihub/prospect.git
+#( cd prospect ; \
+#    git checkout -q 87479dbcdf1ed4720fb6eeb74eba571432fabe41 ; \
+#    pip install .)
 
 # Install the unTimely Catalog explorer viewer
 git clone https://github.com/fkiwy/unTimely_Catalog_explorer.git
