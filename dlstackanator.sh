@@ -86,21 +86,31 @@ install_anaconda() {
     log_verbose "Downloading base Anaconda3 $ver system ...."
     log_verbose "----------------------------------------------"
 
-    fname="Anaconda3-${ver}-${platform}-${arch}.sh"
-    url="${base_url}${fname}"
-    echo "fname=$fname"
+    #fname=$(get_miniconda_filename "$MINICONDA_PYTHON_VERSION" "$MINICONDA_RELEASE_VERSION" "$MINICONDA_BUILD_NUMBER")
+    fname=$(get_anaconda_filename "$ANACONDA_VERSION")
+    if [ $? -eq 0 ]; then
+       log_verbose "The conda installer filename is: $fname"
+    else
+       echo "Failed to determine the conda installer filename."
+       exit 1
+    fi
+
+    #url="${MINICONDA_BASE_URL}${fname}"
+    url="${ANACONDA_BASE_URL}${fname}"
 
     if [ "$_dry_run" -eq 0 ]; then
-        if [ ! -f "./$name" ]; then
+        if [ ! -f "./$fname" ]; then
+            log_verbose "curl -o \"$fname\" \"$url\""
             curl -o "$fname" "$url"
         fi
         if [ ! -d "$prefix/anaconda3" ]; then
             mkdir "$prefix/anaconda3"
         fi
         chmod 755 "$fname"
-        echo "export PWD=\"$prefix\" && sh \"$fname\" -b -u -p \"$prefix/anaconda3\""
+        log_verbose "export PWD=\"$prefix\" && sh \"$fname\" -b -u -p \"$prefix/anaconda3\""
         export PWD="$prefix" && sh "$fname" -b -u -p "$prefix/anaconda3"
 
+        log_verbose "export PATH=\"$prefix/anaconda3/bin:$PATH\""
         export PATH="$prefix/anaconda3/bin:$PATH"
 
         # Call the function to configure Conda channels
@@ -277,6 +287,7 @@ install_packages_from_file() {
     done < "$file_path"
 }
 
+
 install_cfitsio() {
     local PREFIX=$1
 
@@ -285,20 +296,34 @@ install_cfitsio() {
     fi
 
     local cfitsio_ver="4.2.0"
+    local cfitsio_tar="cfitsio-${cfitsio_ver}.tar.gz"
+    local cfitsio_url="https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/${cfitsio_tar}"
 
-    # Download, extract, configure, compile, and install CFITSIO
+    # Check if the tar file already exists
+    if [[ ! -f ${cfitsio_tar} ]]; then
+        log_verbose "Downloading CFITSIO version ${cfitsio_ver}..."
+        wget ${cfitsio_url}
+    else
+        log_verbose "Using existing ${cfitsio_tar} file."
+    fi
+
+    # Extract, configure, compile, and install CFITSIO
     set -eux
-    wget https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-${cfitsio_ver}.tar.gz
-    tar xzvf cfitsio-${cfitsio_ver}.tar.gz
+    tar xzvf ${cfitsio_tar}
     pushd cfitsio-${cfitsio_ver}
+    log_verbose "./configure --prefix=${PREFIX}"
     ./configure --prefix=${PREFIX}
+    log_verbose "make"
     make
+    log_verbose "make install"
     make install
     popd
 
     # Cleanup
-    rm -rf cfitsio-${cfitsio_ver} cfitsio-${cfitsio_ver}.tar.gz
+    log_verbose "rm -rf cfitsio-${cfitsio_ver} ${cfitsio_tar}"
+    rm -rf cfitsio-${cfitsio_ver} ${cfitsio_tar}
 }
+
 
 install_gavo() {
 
@@ -373,7 +398,7 @@ get_env() {
 main() {
     if [[ "$do_cfitsio" == "1" ]]; then
        log_verbose "Install cfitsio"
-       install_cfitsio
+       install_cfitsio ""
     fi
 
     if [ "$do_clean" == 1 ]; then
@@ -460,6 +485,134 @@ main() {
     fi
 }
 
+# Function to get the Anaconda installer filename
+get_anaconda_filename() {
+    # Get the OS type and architecture
+    OS_TYPE=$(uname)
+    ARCH=$(uname -m)
+
+    local ANACONDA_VERSION="$1"
+    # Determine the appropriate filename based on OS and architecture
+    local FILENAME=""
+    case "$OS_TYPE" in
+        Linux)
+            case "$ARCH" in
+                x86_64)
+                    FILENAME="Anaconda3-${ANACONDA_VERSION}-Linux-x86_64.sh"
+                    ;;
+                s390x)
+                    FILENAME="Anaconda3-${ANACONDA_VERSION}-Linux-s390x.sh"
+                    ;;
+                aarch64)
+                    FILENAME="Anaconda3-${ANACONDA_VERSION}-Linux-aarch64.sh"
+                    ;;
+                *)
+                    echo "Unsupported architecture: $ARCH" >&2
+                    return 1
+                    ;;
+            esac
+            ;;
+        Darwin)
+            case "$ARCH" in
+                x86_64)
+                    FILENAME="Anaconda3-${ANACONDA_VERSION}-MacOSX-x86_64.sh"
+                    ;;
+                arm64)
+                    FILENAME="Anaconda3-${ANACONDA_VERSION}-MacOSX-arm64.sh"
+                    ;;
+                *)
+                    echo "Unsupported architecture: $ARCH" >&2
+                    return 1
+                    ;;
+            esac
+            ;;
+        MINGW*|CYGWIN*|MSYS*)
+            if [ "$ARCH" == "x86_64" ]; then
+                FILENAME="Anaconda3-${ANACONDA_VERSION}-Windows-x86_64.exe"
+            else
+                echo "Unsupported architecture: $ARCH" >&2
+                return 1
+            fi
+            ;;
+        *)
+            echo "Unsupported OS: $OS_TYPE" >&2
+            return 1
+            ;;
+    esac
+
+    echo "$FILENAME"
+    return 0
+}
+
+
+get_miniconda_filename() {
+    # Get the OS type and architecture
+    OS_TYPE=$(uname)
+    ARCH=$(uname -m)
+
+    # Define the Miniconda version components
+    local MINICONDA_PYTHON_VERSION="$1"  # e.g., py310
+    local MINICONDA_RELEASE_VERSION="$2" # e.g., 24.4.0
+    local MINICONDA_BUILD_NUMBER="$3"    # e.g., 0
+
+    # Check if all required arguments are provided
+    if [ -z "$MINICONDA_PYTHON_VERSION" ] || [ -z "$MINICONDA_RELEASE_VERSION" ] || [ -z "$MINICONDA_BUILD_NUMBER" ]; then
+        echo "Usage: get_miniconda_filename <MINICONDA_PYTHON_VERSION> <MINICONDA_RELEASE_VERSION> <MINICONDA_BUILD_NUMBER>" >&2
+        return 1
+    fi
+
+    # Determine the appropriate filename based on OS and architecture
+    local FILENAME=""
+    case "$OS_TYPE" in
+        Linux)
+            case "$ARCH" in
+                x86_64)
+                    FILENAME="Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_RELEASE_VERSION}-${MINICONDA_BUILD_NUMBER}-Linux-x86_64.sh"
+                    ;;
+                aarch64)
+                    FILENAME="Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_RELEASE_VERSION}-${MINICONDA_BUILD_NUMBER}-Linux-aarch64.sh"
+                    ;;
+                s390x)
+                    FILENAME="Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_RELEASE_VERSION}-${MINICONDA_BUILD_NUMBER}-Linux-s390x.sh"
+                    ;;
+                *)
+                    echo "Unsupported architecture: $ARCH" >&2
+                    return 1
+                    ;;
+            esac
+            ;;
+        Darwin)
+            case "$ARCH" in
+                x86_64)
+                    FILENAME="Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_RELEASE_VERSION}-${MINICONDA_BUILD_NUMBER}-MacOSX-x86_64.sh"
+                    ;;
+                arm64)
+                    FILENAME="Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_RELEASE_VERSION}-${MINICONDA_BUILD_NUMBER}-MacOSX-arm64.sh"
+                    ;;
+                *)
+                    echo "Unsupported architecture: $ARCH" >&2
+                    return 1
+                    ;;
+            esac
+            ;;
+        MINGW*|CYGWIN*|MSYS*)
+            if [ "$ARCH" == "x86_64" ]; then
+                FILENAME="Miniconda3-${MINICONDA_PYTHON_VERSION}_${MINICONDA_RELEASE_VERSION}-${MINICONDA_BUILD_NUMBER}-Windows-x86_64.exe"
+            else
+                echo "Unsupported architecture: $ARCH" >&2
+                return 1
+            fi
+            ;;
+        *)
+            echo "Unsupported OS: $OS_TYPE" >&2
+            return 1
+            ;;
+    esac
+
+    echo "$FILENAME"
+    return 0
+}
+
 # Global variable indicating whether to proceed with installation
 
 # --------------------
@@ -468,10 +621,14 @@ main() {
 
 # Script settings and default values
 root_dir='/data0'
-ver="2023.03-1"  # Anaconda version to install
-arch="x86_64"    # Architecture
-platform="Linux" # Platform
-base_url="https://repo.anaconda.com/archive/"  # Anaconda download repo
+# Define the Anaconda version you want to use
+MINICONDA_PYTHON_VERSION="py310"
+MINICONDA_RELEASE_VERSION="24.4.0"
+MINICONDA_BUILD_NUMBER="0"
+#ANACONDA_VERSION="2023.03-1"  # Anaconda version to install
+ANACONDA_VERSION="2024.02-1"   # Anaconda version to install
+ANACONDA_BASE_URL="https://repo.anaconda.com/archive/"  # Anaconda download repo
+MINICONDA_BASE_URL="https://repo.anaconda.com/miniconda/"  # Anaconda download repo
 prefix="./"      # Installation prefix
 kernel_dir="${root_dir}/kernel-specs"
 conda_base_path="${root_dir}/sw/anaconda3"
