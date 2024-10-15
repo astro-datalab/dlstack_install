@@ -6,9 +6,6 @@
 export SHELL=/bin/bash
 
 
-#ver="2020.07"			# Anaconda version to install
-#ver="2021.05"			# Anaconda version to install
-#ver="2022.05"			# Anaconda version to install
 ver="2023.03-1"			# Anaconda version to install (Py3.10.13)
 #ver="2023.09-0"			# Anaconda version to install (Py3.11.5)
 
@@ -257,7 +254,6 @@ fi
 if [ $do_clean == 1 ]; then
     echo "# ------------------------------------"
     echo -n "Cleaning old install ..... "
-    #/bin/rm -rf ./anaconda3 ./downloads ./get-pip.py ./MANIFEST
     /bin/rm -rf ./anaconda3 ./downloads ./MANIFEST
     echo "Done"
     echo "# ------------------------------------"
@@ -295,8 +291,6 @@ conda config --add channels astropy
 conda config --add channels glueviz
 conda config --add channels plotly
 conda config --add channels anaconda
-#conda config --add channels https://conda.anaconda.org/als832
-#conda config --add channels https://conda.anaconda.org/pmuller
 
 
 # ============================================================================
@@ -318,14 +312,7 @@ echo "----------------------------------------------"
 # ===============
 # Conda Installs
 # ===============
-#conda install -y --freeze-installed  uwsgi
 if [ $do_managers_only == 0 ]; then
-    #conda install -y --freeze-installed  nodejs=12.4.0
-    #conda install -y --freeze-installed  tensorflow openblas mysqlclient
-    #conda install -y --freeze-installed  mpi4py
-#    conda install -y nodejs=18.12.1	# version needed for jupyter lab build
-#    conda install -y tensorflow openblas mysqlclient
-#    conda install -y mpi4py
 conda list | grep mamba
 conda install -y mpi4py
 conda install -y nodejs		# version needed for jupyter lab build
@@ -340,11 +327,8 @@ pip install --upgrade pip
 pip install flask
 pip install flask_cors
 
-#pip install nodejs==18.12.1	# version needed for jupyter lab build
 pip install tensorflow openblas mysqlclient
-#pip install mpi4py
 
-#pip install "antares-client==1.2.0"
 pip install antares-client
 pip install astropy
 pip install astropy-helpers
@@ -356,7 +340,6 @@ pip install healpy
 pip install httplib2
 pip install jdaviz
 pip install jupyterlab_execute_time
-#pip install numpy==0.57.1
 pip install numba
 pip install numpy
 pip install pathlib
@@ -382,16 +365,11 @@ if [ $do_managers_only == 0 ]; then
     pip install future
     pip install gatspy
     pip install ginga
-    #pip install "glueviz==0.14"
     pip install glueviz
-    #pip install h5py==3.9.0
     pip install h5py
     pip install ipympl
-    #pip install ipython==7.12.0
     pip install ipython
     pip install jampy
-    #pip install jupyterhub==1.4.2
-    #pip install jupyterlab==3.1.11
     pip install jupyterhub
     pip install jupyterlab
     pip install jupyter-nbextensions-configurator
@@ -402,11 +380,9 @@ if [ $do_managers_only == 0 ]; then
     pip install mgefit
     pip install mpdaf
     pip install nbconvert==7.3.1
-    #pip install jinja2==3.0.3
     pip install jinja2
     pip install nbresuse
     if [ $do_stable == 1 ]; then
-        #pip install astro-datalab
         git clone http://github.com/astro-datalab/datalab.git
         ( cd datalab ; pip install .)
 
@@ -421,11 +397,10 @@ if [ $do_managers_only == 0 ]; then
     pip install ppxf
     pip install photutils
     pip install plotly
-    #pip install git+https://github.com/desihub/prospect.git@1.2.0
     pip install pyopengl
     pip install pyzdcf
     pip install rebound==3.24.3
-    pip install sparclclient==1.2.1
+    pip install sparclclient==1.2.3
     pip install speclite
     pip install specutils
     pip install termcolor
@@ -496,38 +471,17 @@ echo "----------------------------------------------"
 echo " Downloading external packages ...."
 echo "----------------------------------------------"
 
-# Install the Data Lab client package and authenticator
-#
-# NB: installed above
-#
-#if [ $do_dev == 1 ]; then
-#    git clone http://github.com/astro-datalab/datalab.git
-#    ( cd datalab ; pip install .)
-#fi
-
 # Clone the Data Lab Authenticator
 git clone https://github.com/astro-datalab/dlauthenticator
 ( cd dlauthenticator ; git checkout gp02_forward; pip install .)
-
-# Install the PROSPECT viewer
-#git clone -q https://github.com/desihub/prospect.git
-#( cd prospect ; \
-#    git checkout -q 87479dbcdf1ed4720fb6eeb74eba571432fabe41 ; \
-#    pip install .)
 
 # Install the unTimely Catalog explorer viewer
 git clone https://github.com/fkiwy/unTimely_Catalog_explorer.git
 (cd unTimely_Catalog_explorer ; pip install .)
 
-
 # Install the http proxy.
 npm install -g configurable-http-proxy
 
-
-# ------------------------------------------------------------------------
-# Recent Anaconda packages require a re-install of jupyterhub ...
-#conda install -y jupyterhub
-#pip install jupyterhub --force-reinstall
 
 # ------------------------------------------------------------------------
 if [ $do_jupyterlab_extensions == 1 ]; then
@@ -535,10 +489,6 @@ if [ $do_jupyterlab_extensions == 1 ]; then
     echo "----------------------------------------------"
     echo " Installing JupyterLab packages ...."
     echo "----------------------------------------------"
-
-    #conda install -c conda-forge -y ipywidgets		# enabled automatically
-#   conda install -c conda-forge -y jupyter_nbextensions_configurator
-#   pip install jupyter-nbextensions-configurator
 
     pip install ipywidgets
     pip install jupyterlab-execute-time==2.3.1
