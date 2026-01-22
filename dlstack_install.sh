@@ -408,6 +408,7 @@ if [ $do_managers_only == 0 ]; then
     pip install vorbin
     pip install wget
     pip install ipyaladin
+    pip install mocpy
 
     pip uninstall --force spyder            # for dependency resolution below
     pip uninstall --force pyqt5 pyqtwebengine
